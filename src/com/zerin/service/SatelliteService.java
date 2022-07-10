@@ -1,5 +1,6 @@
 package com.zerin.service;
 
+import com.zerin.model.DoubleWindow;
 import com.zerin.model.Position;
 import com.zerin.model.TimeWindow;
 
@@ -28,8 +29,8 @@ public class SatelliteService {
             } else {
                 for (File iFile : files) {
                     String fileName = iFile.getName();
-                    if (fileName.equals("SatCoverInfo_2.txt")) {//4 doubletimewin
-                        break;
+                    if (fileName.equals("SatCoverInfo_6.txt")) {//4 doubletimewin
+//                        break;
                     }
                     System.out.println("Reading file:" + fileName + "...  ");
                     try {
@@ -161,24 +162,22 @@ public class SatelliteService {
         //遍历第一题中的24城市
         for (Map<String, ArrayList<Position>> curTar : targetInfo) {
             ArrayList<TimeWindow> allTimeWindows = new ArrayList<>();//可见时间窗口
-            ArrayList<Integer> tmpMaxGap = new ArrayList<>();//每个点目标时间间隙的最大值
-            ArrayList<Integer> allGaps = new ArrayList<>();//每个点目标时间间隙
+
             //对于一个具体的城市(24)
             for (Map.Entry<String, ArrayList<Position>> tarEntry : curTar.entrySet()) {
+                ArrayList<DoubleWindow> timeWindows = new ArrayList<>();//记录每个target的时间窗口 用于计算二重覆盖
+                ArrayList<Integer> tmpMaxGap = new ArrayList<>();//每个点目标时间间隙的最大值
+                ArrayList<Integer> allGaps = new ArrayList<>();//每个点目标时间间隙
                 System.out.println(tarEntry.getKey() + ":");//城市名
                 if (tarEntry.getKey().equals("Abidjan")) continue;
                 if (tarEntry.getKey().equals("Accra")) continue;
-                TimeWindow tmpTimeWindow = null;
                 int satNo = 0;
                 //遍历9卫星
                 for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
                     boolean flag1 = true;
                     boolean flag2 = true;
                     ArrayList<Integer> visiableTime = new ArrayList<>();//时刻
-                    ArrayList<Integer> tmp = new ArrayList<>();//时刻
-
                     ArrayList<Integer> unvisiableTime = new ArrayList<>();//时刻
-                    ArrayList<ArrayList<Integer>> timeWindow = new ArrayList<>();//时间窗口(两个时刻)
                     System.out.println("卫星" + satNo + "对该目标的可见时间窗口:");
                     //对于一个具体的卫星(86400)
                     for (Map.Entry<Integer, ArrayList<Position>> satEntry : curSat.entrySet()) {
@@ -186,35 +185,22 @@ public class SatelliteService {
                         if (pointInPolygon(tarEntry.getValue().get(0), satEntry.getValue())) {
                             if (flag1) { //记录开始可见时刻
                                 visiableTime.add(satEntry.getKey());//时刻
-                                tmp.add(satEntry.getKey());
-                                System.out.print(toDate(satEntry.getKey()) + "\t");
+                                System.out.print(satEntry.getKey() + "\t");//todo:todate
                                 flag1 = false;//为了记录到停止服务的时刻
                             }
                         } else { //不可见的时刻
                             if (!flag1) {
                                 visiableTime.add(satEntry.getKey());
-                                tmp.add(satEntry.getKey());
-                                int serviceTime = visiableTime.get(1) - visiableTime.get(0); //时间间隔
-                                System.out.println(toDate(satEntry.getKey()) + "\t" + serviceTime + "s");
-                                timeWindow.add(tmp);
+                                int startTime = visiableTime.get(0);
+                                int endTime = visiableTime.get(1);
+                                int serviceTime = endTime - startTime; //时间间隔
+                                System.out.println(satEntry.getKey() + "\t" + serviceTime + "s");//todo:todate
+                                timeWindows.add(new DoubleWindow(satNo, startTime, endTime) {
+                                });//每个时间窗口都加入
                                 visiableTime.clear();//!
                                 flag1 = true;
                             }
                         }
-//                        if (!gapTime.isEmpty()) { //存在时间间隙
-//                            //保存时间窗口和对应的卫星序号
-////                            tmpTimeWindow = new TimeWindow();
-////                            tmpTimeWindow.setSatNo(satNo);
-////                            tmpTimeWindow.setWindow(timeWindow);
-////                            allTimeWindows.add(tmpTimeWindow);
-//                            //保存某卫星对某目标的最大间隙数据
-//                            int tempMaxGapTime = Collections.max(gapTime);
-//                            tmpMaxGap.add(tempMaxGapTime);
-//                            //保存间隙数据
-//                            //保存间隙数据
-//                            allGaps.addAll(gapTime);
-//                        }
-
                         //找不可见窗口->覆盖时间间隙
                         ArrayList<Integer> gapTime = new ArrayList<>();//时间间隙
                         if (!pointInPolygon(tarEntry.getValue().get(0), satEntry.getValue())) {
@@ -226,7 +212,6 @@ public class SatelliteService {
                             if (!flag2) {
                                 unvisiableTime.add(satEntry.getKey());
                                 int unServiceTime = unvisiableTime.get(1) - unvisiableTime.get(0); //时间间隔
-//                                System.out.print(" "+unServiceTime+ " ");
                                 gapTime.add(unServiceTime);
                                 unvisiableTime.clear();//!
                                 flag2 = true;
@@ -242,6 +227,75 @@ public class SatelliteService {
                     }
                     satNo++;
                 }
+                doubleTimeWindow(timeWindows);//计算二重窗口
+                gapTimeWindow(tmpMaxGap, allGaps);//计算覆盖时间间隙
+            }
+        }
+        ps.close();
+        System.setOut(defaultOut);//输出流->系统
+        System.out.println("done");
+    }
+
+    //二重覆盖时间窗口
+    public static void doubleTimeWindow(ArrayList<DoubleWindow> timeWindows) {
+        System.out.println("二重覆盖时间窗口: ");
+        Iterator<DoubleWindow> iterator1 = timeWindows.iterator();
+        Iterator<DoubleWindow> iterator2 = timeWindows.iterator();
+        iterator2.next();
+        while (iterator1.hasNext()) {
+            DoubleWindow tmp1=new DoubleWindow();
+            tmp1=iterator1.next();
+            DoubleWindow tmp2=new DoubleWindow();
+            int i =tmp1.getStartTime();
+            int j =tmp1.getEndTime();
+            while (iterator2.hasNext()) {
+                tmp2=iterator2.next();
+                if (tmp2.getStartTime() <= i && i < tmp2.getEndTime()) {
+                    System.out.println("卫星" + tmp1.getSatNo() + "与卫星" + tmp2.getSatNo() + "：\t" +
+                            toDate(i) + "\t" + toDate(tmp2.getEndTime()));
+                }
+                if (tmp2.getStartTime() <= j && j < tmp2.getEndTime()) {
+                    System.out.println("卫星" + tmp1.getSatNo() + "与卫星" + tmp2.getSatNo() + "：\t" +
+                            toDate(tmp2.getStartTime()) + "\t" + toDate(j));
+                }
+            }
+        }
+    }
+
+    //覆盖时间间隙
+    public static void gapTimeWindow(ArrayList<Integer> tmpMaxGap, ArrayList<Integer> allGaps) {
+        int maxGap = 0;
+        if (tmpMaxGap.size() != 0) {
+            maxGap = Collections.max(tmpMaxGap);
+        }
+        int sumGap = allGaps.stream().mapToInt(Integer::intValue).sum();
+        System.out.println("星座对该目标的覆盖时间间隙: " + sumGap + "s");
+        System.out.println("星座对点目标时间间隙的最大值: " + maxGap + "s");
+        if (sumGap != 0 && allGaps.size() != 0) {
+            System.out.println("星座对点目标时间间隙的平均值: " + sumGap / allGaps.size() + "s\n");
+        }
+    }
+}
+
+
+//                tmpMaxGap.clear();
+//                allGaps.clear();
+
+//                        if (!timeWindow.isEmpty()) { //存在时间间隙
+//                            //保存时间窗口和对应的卫星序号
+//                            tmpTimeWindow = new TimeWindow();
+//                            tmpTimeWindow.setSatNo(satNo);
+//                            tmpTimeWindow.setWindow(timeWindow);
+//                            allTimeWindows.add(tmpTimeWindow);
+//                            //保存某卫星对某目标的最大间隙数据
+//                            int tempMaxGapTime = Collections.max(gapTime);
+//                            tmpMaxGap.add(tempMaxGapTime);
+//                            //保存间隙数据
+//                            //保存间隙数据
+//                            allGaps.addAll(gapTime);
+//                        }
+
+
 //                System.out.println("二重覆盖时间窗口：");
 //                ArrayList<ArrayList<Integer>> allDoubleTimeWindow = new ArrayList<>();
 //
@@ -290,26 +344,3 @@ public class SatelliteService {
 //                    }
 //                }
 
-                int maxGap = 0;
-                if (tmpMaxGap.size() != 0) {
-                    maxGap = Collections.max(tmpMaxGap);
-                }
-                int sumGap = allGaps.stream().mapToInt(Integer::intValue).sum();
-                System.out.println("星座对该目标的覆盖时间间隙: " + sumGap + "s");
-                System.out.println("星座对点目标时间间隙的最大值: " + maxGap + "s");
-                if (sumGap != 0 && allGaps.size() != 0) {
-                    System.out.println("星座对点目标时间间隙的平均值: " + sumGap / allGaps.size() + "s\n");
-                }
-                tmpMaxGap.clear();
-                allGaps.clear();
-            }
-        }
-        ps.close();
-        System.setOut(defaultOut);//输出流->系统
-        System.out.println("done");
-    }
-
-    public static void doubleTimeWindow() {
-
-    }
-}
