@@ -1,71 +1,22 @@
 package com.zerin.service;
 
-import com.zerin.model.DoubleWindow;
-import com.zerin.model.Position;
 import com.zerin.model.TimeWindow;
+import com.zerin.model.Position;
 
 import java.io.*;
 import java.util.*;
 
-public class SatelliteService {
-    static LinkedHashMap<Integer, ArrayList<Position>> sat = null;
-    static ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo = new ArrayList<>();
-    //第一题的target city数据
-    static LinkedHashMap<String, ArrayList<Position>> target = new LinkedHashMap<>();
-    static ArrayList<LinkedHashMap<String, ArrayList<Position>>> targetInfo = new ArrayList<>();
+import static com.zerin.utils.CommonUtils.pointInPolygon;
+import static com.zerin.utils.CommonUtils.toDate;
 
-    //读取原始卫星数据
-    public static void readSatInfo() {
-        Position pos = null;
-        ArrayList<Position> posInfo = null;
-        InputStream path = null;
-        File file = new File("Data/SatelliteInfo");
-        if (file.exists()) {
-            File[] files = file.listFiles();
-            assert files != null;
-            if (files.length == 0) {
-                System.out.println("ReadFileException:Empty file");
-                return;
-            } else {
-                for (File iFile : files) {
-                    String fileName = iFile.getName();
-                    if (fileName.equals("SatCoverInfo_6.txt")) {//4 doubletimewin
-//                        break;//todo:debug
-                    }
-                    System.out.println("Reading file:" + fileName + "...  ");
-                    try {
-                        sat = new LinkedHashMap<>();
-                        path = new FileInputStream(iFile.getAbsolutePath());
-                        Scanner scanner = new Scanner(path);
-                        scanner.nextLine();//除去第一行的日期
-                        for (int i = 0; i < 86400; i++) {
-                            posInfo = new ArrayList<>();//!
-                            for (int j = 0; j < 21; j++) {
-                                pos = new Position();
-                                double a = scanner.nextDouble();
-                                double b = scanner.nextDouble();
-                                pos.setLongitude(a);
-                                pos.setLatitude(b);
-                                posInfo.add(pos);
-//                                System.out.println(a+" "+b);
-                            }
-                            scanner.nextLine();//除去" "
-                            scanner.nextLine();//不读取日期
-                            sat.put(i, posInfo);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    satInfo.add(sat);
-                }
-            }
-        } else {
-            System.out.println("ReadFileException:Nonexistent path");
-        }
-    }
+public class TimeCalc {
+
+    //第一题的target city数据
+    static ArrayList<LinkedHashMap<String, ArrayList<Position>>> targetInfo = new ArrayList<>();
 
     //读第一题的target city数据
     public static void readTarInfo() {
+        LinkedHashMap<String, ArrayList<Position>> target = new LinkedHashMap<>();
         Position pos = null;
         ArrayList<Position> posInfo;
         InputStream path = null;
@@ -100,57 +51,9 @@ public class SatelliteService {
         }
     }
 
-    //秒数转日期
-    public static StringBuilder toDate(int time) {
-        if (time == 86400) {
-            StringBuilder lastDate = new StringBuilder();
-            lastDate.append("2022-01-02 0:00:00");
-            return lastDate;
-        }
-        StringBuilder date = new StringBuilder();
-        date.append("2022-01-01 ");
-        int hour = time / 3600 % 24, minute = time / 60 % 60, second = time % 60;
-        date.append(hour).append(":");
-        if (minute < 10) date.append("0").append(minute).append(":");
-        else date.append(minute).append(":");
-        if (second < 10) date.append("0").append(second);
-        else date.append(second);
-        return date;
-    }
-
-    //从需要判断的点向x轴负方向引一条射线，判断多边形的每一条边与这条射线是否有交点
-    public static boolean pointInPolygon(Position pos, ArrayList<Position> polyVertices) {
-        int i, j = polyVertices.size() - 1;
-        boolean inside = false;
-        double x = pos.getLongitude();
-        double y = pos.getLatitude();
-        Position a = new Position();
-        Position b = new Position();
-        for (i = 0; i < polyVertices.size(); i++) {
-            a = polyVertices.get(i);
-            b = polyVertices.get(j);
-            if (((a.getLatitude() < y && b.getLatitude() >= y)
-                    || (b.getLatitude() < y && a.getLatitude() >= y))//保证射线在多边形这条边的y值范围内
-                    && (a.getLongitude() <= x || b.getLongitude() <= x)) {//除去 需判断的点在边的左边的情况
-                //射线与边交点的x坐标
-                double abx = a.getLongitude() + (y - a.getLatitude()) / (b.getLatitude() - a.getLatitude()) * (b.getLongitude() - a.getLongitude());
-                boolean bTmp;
-                //点在多边形的边上，也算在多边形内
-                if (abx == x) {
-                    return true;
-                } else {
-                    bTmp = (abx < x);
-                }
-                inside ^= bTmp;
-            }
-            j = i;
-        }
-        return inside;
-    }
-
     //计算卫星星座对每个点目标的可见时间窗口 对每个点目标的二重覆盖时间窗口
     //计算卫星星座对每个点目标的覆盖时间间隙 统计每个点目标时间间隙的最大值和平均值
-    public static void timeWindow() {
+    public static void timeWindow(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
         PrintStream defaultOut = System.out;//保存系统默认的打印输出流缓存
         PrintStream ps = null;
         try {
@@ -161,15 +64,13 @@ public class SatelliteService {
         System.setOut(ps);//输出流->文件
         //遍历第一题中的24城市
         for (Map<String, ArrayList<Position>> curTar : targetInfo) {
-            ArrayList<TimeWindow> allTimeWindows = new ArrayList<>();//可见时间窗口
             //对于一个具体的城市(24)
             for (Map.Entry<String, ArrayList<Position>> tarEntry : curTar.entrySet()) {
-                ArrayList<DoubleWindow> timeWindows = new ArrayList<>();//记录每个target的时间窗口 用于计算二重覆盖
+                ArrayList<TimeWindow> timeWindows = new ArrayList<>();//记录每个target的时间窗口 用于计算二重覆盖
                 ArrayList<Integer> tmpMaxGap = new ArrayList<>();//每个点目标时间间隙的最大值
                 ArrayList<Integer> allGaps = new ArrayList<>();//每个点目标时间间隙
                 System.out.println(tarEntry.getKey() + ":");//城市名
 //                if (tarEntry.getKey().equals("Abidjan")) continue;//todo:debug
-//                if (tarEntry.getKey().equals("Accra")) continue;
                 int satNo = 0;
                 //遍历9卫星
                 for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
@@ -194,7 +95,7 @@ public class SatelliteService {
                                 int endTime = visiableTime.get(1);
                                 int serviceTime = endTime - startTime; //时间间隔
                                 System.out.println(toDate(satEntry.getKey()) + "\t" + serviceTime + "s");
-                                timeWindows.add(new DoubleWindow(satNo, startTime, endTime) {
+                                timeWindows.add(new TimeWindow(satNo, startTime, endTime) {
                                 });//每个时间窗口都加入
                                 visiableTime.clear();//!
                                 flag1 = true;
@@ -236,23 +137,23 @@ public class SatelliteService {
     }
 
     //二重覆盖时间窗口
-    public static void doubleTimeWindow(ArrayList<DoubleWindow> timeWindows) {
+    public static void doubleTimeWindow(ArrayList<TimeWindow> timeWindows) {
         System.out.println("二重覆盖时间窗口: ");
-        Iterator<DoubleWindow> iterator1 = timeWindows.iterator();
-        int k=0;
+        Iterator<TimeWindow> iterator1 = timeWindows.iterator();
+        int k = 0;
         while (iterator1.hasNext()) {
-            DoubleWindow tmp1=new DoubleWindow();
-            tmp1=iterator1.next();
-            DoubleWindow tmp2=new DoubleWindow();
-            int i =tmp1.getStartTime();
-            int j =tmp1.getEndTime();
+            TimeWindow tmp1 = new TimeWindow();
+            tmp1 = iterator1.next();
+            TimeWindow tmp2 = new TimeWindow();
+            int i = tmp1.getStartTime();
+            int j = tmp1.getEndTime();
             k++;
-            Iterator<DoubleWindow> iterator2 = timeWindows.iterator();
-            for (int skip = 0; skip <k ; skip++) {
+            Iterator<TimeWindow> iterator2 = timeWindows.iterator();
+            for (int skip = 0; skip < k; skip++) {
                 iterator2.next();
             }
             while (iterator2.hasNext()) {
-                tmp2=iterator2.next();
+                tmp2 = iterator2.next();
                 //时间窗口1的头在窗口2之间
                 if (tmp2.getStartTime() <= i && i < tmp2.getEndTime()) {
                     System.out.println("卫星" + tmp1.getSatNo() + "与卫星" + tmp2.getSatNo() + "：\t" +
@@ -265,7 +166,7 @@ public class SatelliteService {
                     continue;
                 }
                 //时间窗口1包含窗口2
-                if(i<=tmp2.getStartTime()&&tmp2.getEndTime()<=j){
+                if (i <= tmp2.getStartTime() && tmp2.getEndTime() <= j) {
                     System.out.println("卫星" + tmp1.getSatNo() + "与卫星" + tmp2.getSatNo() + "：\t" +
                             toDate(tmp2.getStartTime()) + "\t" + toDate(tmp2.getEndTime()));
                 }
@@ -280,12 +181,13 @@ public class SatelliteService {
             maxGap = Collections.max(tmpMaxGap);
         }
         int sumGap = allGaps.stream().mapToInt(Integer::intValue).sum();
-        System.out.println("星座对该目标的覆盖时间间隙: " + sumGap + "s");
-        System.out.println("星座对点目标时间间隙的最大值: " + maxGap + "s");
+        System.out.println("星座对该目标的覆盖时间间隙:\t\t\t" + sumGap + "s");
+        System.out.println("星座对点目标时间间隙的最大值:\t\t" + maxGap + "s");
         if (sumGap != 0 && allGaps.size() != 0) {
-            System.out.println("星座对点目标时间间隙的平均值: " + sumGap / allGaps.size() + "s\n");
+            System.out.println("星座对点目标时间间隙的平均值:\t\t" + sumGap / allGaps.size() + "s\n");
         }
     }
+
 }
 
 
