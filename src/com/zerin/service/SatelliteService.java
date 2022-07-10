@@ -30,7 +30,7 @@ public class SatelliteService {
                 for (File iFile : files) {
                     String fileName = iFile.getName();
                     if (fileName.equals("SatCoverInfo_6.txt")) {//4 doubletimewin
-//                        break;
+//                        break;//todo:debug
                     }
                     System.out.println("Reading file:" + fileName + "...  ");
                     try {
@@ -162,15 +162,14 @@ public class SatelliteService {
         //遍历第一题中的24城市
         for (Map<String, ArrayList<Position>> curTar : targetInfo) {
             ArrayList<TimeWindow> allTimeWindows = new ArrayList<>();//可见时间窗口
-
             //对于一个具体的城市(24)
             for (Map.Entry<String, ArrayList<Position>> tarEntry : curTar.entrySet()) {
                 ArrayList<DoubleWindow> timeWindows = new ArrayList<>();//记录每个target的时间窗口 用于计算二重覆盖
                 ArrayList<Integer> tmpMaxGap = new ArrayList<>();//每个点目标时间间隙的最大值
                 ArrayList<Integer> allGaps = new ArrayList<>();//每个点目标时间间隙
                 System.out.println(tarEntry.getKey() + ":");//城市名
-                if (tarEntry.getKey().equals("Abidjan")) continue;
-                if (tarEntry.getKey().equals("Accra")) continue;
+//                if (tarEntry.getKey().equals("Abidjan")) continue;//todo:debug
+//                if (tarEntry.getKey().equals("Accra")) continue;
                 int satNo = 0;
                 //遍历9卫星
                 for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
@@ -185,7 +184,7 @@ public class SatelliteService {
                         if (pointInPolygon(tarEntry.getValue().get(0), satEntry.getValue())) {
                             if (flag1) { //记录开始可见时刻
                                 visiableTime.add(satEntry.getKey());//时刻
-                                System.out.print(satEntry.getKey() + "\t");//todo:todate
+                                System.out.print(toDate(satEntry.getKey()) + "\t");
                                 flag1 = false;//为了记录到停止服务的时刻
                             }
                         } else { //不可见的时刻
@@ -194,7 +193,7 @@ public class SatelliteService {
                                 int startTime = visiableTime.get(0);
                                 int endTime = visiableTime.get(1);
                                 int serviceTime = endTime - startTime; //时间间隔
-                                System.out.println(satEntry.getKey() + "\t" + serviceTime + "s");//todo:todate
+                                System.out.println(toDate(satEntry.getKey()) + "\t" + serviceTime + "s");
                                 timeWindows.add(new DoubleWindow(satNo, startTime, endTime) {
                                 });//每个时间窗口都加入
                                 visiableTime.clear();//!
@@ -240,23 +239,35 @@ public class SatelliteService {
     public static void doubleTimeWindow(ArrayList<DoubleWindow> timeWindows) {
         System.out.println("二重覆盖时间窗口: ");
         Iterator<DoubleWindow> iterator1 = timeWindows.iterator();
-        Iterator<DoubleWindow> iterator2 = timeWindows.iterator();
-        iterator2.next();
+        int k=0;
         while (iterator1.hasNext()) {
             DoubleWindow tmp1=new DoubleWindow();
             tmp1=iterator1.next();
             DoubleWindow tmp2=new DoubleWindow();
             int i =tmp1.getStartTime();
             int j =tmp1.getEndTime();
+            k++;
+            Iterator<DoubleWindow> iterator2 = timeWindows.iterator();
+            for (int skip = 0; skip <k ; skip++) {
+                iterator2.next();
+            }
             while (iterator2.hasNext()) {
                 tmp2=iterator2.next();
+                //时间窗口1的头在窗口2之间
                 if (tmp2.getStartTime() <= i && i < tmp2.getEndTime()) {
                     System.out.println("卫星" + tmp1.getSatNo() + "与卫星" + tmp2.getSatNo() + "：\t" +
                             toDate(i) + "\t" + toDate(tmp2.getEndTime()));
                 }
+                //时间窗口1的尾在窗口2之间
                 if (tmp2.getStartTime() <= j && j < tmp2.getEndTime()) {
                     System.out.println("卫星" + tmp1.getSatNo() + "与卫星" + tmp2.getSatNo() + "：\t" +
                             toDate(tmp2.getStartTime()) + "\t" + toDate(j));
+                    continue;
+                }
+                //时间窗口1包含窗口2
+                if(i<=tmp2.getStartTime()&&tmp2.getEndTime()<=j){
+                    System.out.println("卫星" + tmp1.getSatNo() + "与卫星" + tmp2.getSatNo() + "：\t" +
+                            toDate(tmp2.getStartTime()) + "\t" + toDate(tmp2.getEndTime()));
                 }
             }
         }
