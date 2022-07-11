@@ -2,16 +2,16 @@ package com.zerin.utils;
 
 import com.zerin.model.Position;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class CommonUtils {
 
     //读取原始卫星数据
+    //无缓冲的读取 用时110s左右
     public static void readSatInfo(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
         LinkedHashMap<Integer, ArrayList<Position>> sat = null;
         Position pos = null;
@@ -27,15 +27,12 @@ public class CommonUtils {
             } else {
                 for (File iFile : files) {
                     String fileName = iFile.getName();
-                    if (fileName.equals("SatCoverInfo_3.txt")) {//4 doubletimewin
-//                        break;//todo:debug
-                    }
                     System.out.println("Reading file:" + fileName + "...  ");
                     try {
                         sat = new LinkedHashMap<>();
                         path = new FileInputStream(iFile.getAbsolutePath());
                         Scanner scanner = new Scanner(path);
-                        scanner.nextLine();//除去第一行的日期
+                        scanner.nextLine();//只除去第一行的日期
                         for (int i = 0; i < 86400; i++) {
                             posInfo = new ArrayList<>();//!
                             for (int j = 0; j < 21; j++) {
@@ -45,10 +42,59 @@ public class CommonUtils {
                                 pos.setLongitude(a);
                                 pos.setLatitude(b);
                                 posInfo.add(pos);
-//                                System.out.println(a+" "+b);
                             }
                             scanner.nextLine();//除去" "
                             scanner.nextLine();//不读取日期
+                            sat.put(i, posInfo);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    satInfo.add(sat);
+                }
+            }
+        } else {
+            System.out.println("ReadFileException:Nonexistent path");
+        }
+    }
+
+    //读取原始卫星数据
+    //带缓冲的读取 用时15s左右
+    public static void bufferReadSatInfo(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
+        LinkedHashMap<Integer, ArrayList<Position>> sat = null;
+        Position pos = null;
+        ArrayList<Position> posInfo = null;
+        InputStream path = null;
+        File file = new File("Data/SatelliteInfo");
+        if (file.exists()) {
+            File[] files = file.listFiles();
+            assert files != null;
+            if (files.length == 0) {
+                System.out.println("ReadFileException:Empty file");
+                return;
+            } else {
+                for (File iFile : files) {
+                    String fileName = iFile.getName();
+                    System.out.println("Reading file:" + fileName + "...  ");
+                    try {
+                        sat = new LinkedHashMap<>();
+                        path = new FileInputStream(iFile.getAbsolutePath());
+                        BufferedReader br = new BufferedReader(new InputStreamReader(path));
+                        for (int i = 0; i < 86400; i++) {
+                            br.readLine();//除去每个日期
+                            posInfo = new ArrayList<>();//!
+                            for (int j = 0; j < 21; j++) {
+                                String str = null;
+                                pos = new Position();
+                                str = br.readLine();
+                                StringTokenizer st = new StringTokenizer(str, "\t");//分割经纬度
+                                //while(st.hasMoreElements()){}
+                                double a = Double.parseDouble((String) st.nextElement());
+                                double b = Double.parseDouble((String) st.nextElement());
+                                pos.setLongitude(a);
+                                pos.setLatitude(b);
+                                posInfo.add(pos);
+                            }
                             sat.put(i, posInfo);
                         }
                     } catch (Exception e) {
@@ -108,6 +154,11 @@ public class CommonUtils {
             j = i;
         }
         return inside;
+    }
+
+    //Convert points to ellipses
+    public static void toEllipse() {
+
     }
 
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 
+import static com.zerin.utils.CommonUtils.bufferReadSatInfo;
 import static com.zerin.utils.CommonUtils.readSatInfo;
 import static com.zerin.service.TimeCalc.*;
 //第一题:
@@ -22,7 +23,7 @@ public class Satellite {
 
         Scanner scanner = new Scanner(System.in);
         double startTime =  System.currentTimeMillis();
-        readSatInfo(satInfo);
+        bufferReadSatInfo(satInfo);
         readTarInfo();
         double t1 =  System.currentTimeMillis();
         double readTime = (t1-startTime)/1000;
