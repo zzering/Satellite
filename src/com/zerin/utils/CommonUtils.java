@@ -1,12 +1,10 @@
 package com.zerin.utils;
 
+import com.zerin.model.Ellipse;
 import com.zerin.model.Position;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class CommonUtils {
 
@@ -157,8 +155,24 @@ public class CommonUtils {
     }
 
     //Convert points to ellipses
-    public static void toEllipse() {
+    public static ArrayList<LinkedHashMap<Integer, ArrayList<Ellipse>>> toEllipse(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
+        if (satInfo.isEmpty()) {
+            System.out.println("请先读取原始卫星数据");
+            return null;
+        }
+        ArrayList<LinkedHashMap<Integer, ArrayList<Ellipse>>> eSatInfo = new ArrayList<>();
+        //遍历9卫星
+        for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
+            //对于一个具体的卫星(86400)
+            for (Map.Entry<Integer, ArrayList<Position>> satEntry : curSat.entrySet()) {
+                //todo：Convert points to ellipses
+            }
+        }
 
+
+        satInfo.clear();// 释放原始卫星数据占用的内存
+        return eSatInfo;
     }
 
 }
+

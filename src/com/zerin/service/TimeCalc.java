@@ -11,7 +11,7 @@ import static com.zerin.utils.CommonUtils.toDate;
 
 public class TimeCalc {
 
-    //第一题的target city数据
+    //存放第一题的target city数据
     static ArrayList<LinkedHashMap<String, ArrayList<Position>>> targetInfo = new ArrayList<>();
 
     //读第一题的target city数据
@@ -70,7 +70,6 @@ public class TimeCalc {
                 ArrayList<Integer> tmpMaxGap = new ArrayList<>();//每个点目标时间间隙的最大值
                 ArrayList<Integer> allGaps = new ArrayList<>();//每个点目标时间间隙
                 System.out.println(tarEntry.getKey() + ":");//城市名
-//                if (tarEntry.getKey().equals("Abidjan")) continue;//todo:debug
                 int satNo = 0;
                 //遍历9卫星
                 for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
@@ -189,71 +188,4 @@ public class TimeCalc {
     }
 
 }
-
-
-//                tmpMaxGap.clear();
-//                allGaps.clear();
-
-//                        if (!timeWindow.isEmpty()) { //存在时间间隙
-//                            //保存时间窗口和对应的卫星序号
-//                            tmpTimeWindow = new TimeWindow();
-//                            tmpTimeWindow.setSatNo(satNo);
-//                            tmpTimeWindow.setWindow(timeWindow);
-//                            allTimeWindows.add(tmpTimeWindow);
-//                            //保存某卫星对某目标的最大间隙数据
-//                            int tempMaxGapTime = Collections.max(gapTime);
-//                            tmpMaxGap.add(tempMaxGapTime);
-//                            //保存间隙数据
-//                            //保存间隙数据
-//                            allGaps.addAll(gapTime);
-//                        }
-
-
-//                System.out.println("二重覆盖时间窗口：");
-//                ArrayList<ArrayList<Integer>> allDoubleTimeWindow = new ArrayList<>();
-//
-//                ArrayList<ArrayList<Integer>> doubleTimeWindow = new ArrayList<>();
-//                Iterator<TimeWindow> iterator1 = allTimeWindows.iterator();
-//                Iterator<TimeWindow> iterator2 = allTimeWindows.iterator();
-//                ArrayList<ArrayList<Integer>> tmp1 =null;
-//                ArrayList<ArrayList<Integer>> tmp2 =null;
-//                        iterator2.next();
-//                while (iterator1.hasNext() && iterator2.hasNext()) {
-//                    tmp1=new ArrayList<>();
-//                    tmp2=new ArrayList<>();
-//                    tmp1 = iterator1.next().getWindow();
-//                    tmp2 = iterator2.next().getWindow();
-//                    ArrayList<Integer> tmp=null;
-//                    int k = 0,n=0;
-//                    int length1 = tmp1.size();
-//                    int length2 = tmp2.size();
-//                    if (length1 == 0 || length2 == 0) break;
-//                    int i = 0, j = 0;
-//                    while (i < length1 && j < length2) {
-//                        Integer start = Math.max(tmp1.get(i).get(0), tmp2.get(j).get(0));//时间窗口开始时刻
-//                        Integer end = Math.max(tmp1.get(i).get(1), tmp2.get(j).get(1));
-//                        if (start <= end) {
-//                            tmp = new ArrayList<>();
-//                            tmp.set(k, start);
-//                            k++;
-//                            tmp.set(k, end);
-//                            k++;
-//                            doubleTimeWindow.set(n, tmp);
-//                            n++;
-//                        }
-//                        if (tmp1.get(i).get(1) < tmp2.get(j).get(1)) {
-//                            i++;
-//                        } else {
-//                            j++;
-//                        }
-//                    }
-//                    if(!doubleTimeWindow.isEmpty()){
-//                        System.out.print("卫星"+iterator1.next().getSatNo()+"和卫星"+iterator2.next().getSatNo()+":");
-//                        for(var it:doubleTimeWindow){
-//                            System.out.println(toDate(it.get(0))+"\t"+toDate(it.get(1)));
-//                        }
-//                    }else {
-//                        System.out.println("无");
-//                    }
-//                }
 
