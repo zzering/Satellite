@@ -17,6 +17,7 @@ public class CommonUtils {
         InputStream path = null;
         File file = new File("Data/SatelliteInfo");
         if (file.exists()) {
+            System.out.println("正在读取原始卫星数据...");
             File[] files = file.listFiles();
             assert files != null;
             if (files.length == 0) {
@@ -25,7 +26,7 @@ public class CommonUtils {
             } else {
                 for (File iFile : files) {
                     String fileName = iFile.getName();
-                    System.out.println("Reading file:" + fileName + "...  ");
+                    System.out.println("Reading file:" + fileName + "...");
                     try {
                         sat = new LinkedHashMap<>();
                         path = new FileInputStream(iFile.getAbsolutePath());
@@ -65,6 +66,7 @@ public class CommonUtils {
         InputStream path = null;
         File file = new File("Data/SatelliteInfo");
         if (file.exists()) {
+            System.out.println("正在读取原始卫星数据...");
             File[] files = file.listFiles();
             assert files != null;
             if (files.length == 0) {
@@ -73,7 +75,7 @@ public class CommonUtils {
             } else {
                 for (File iFile : files) {
                     String fileName = iFile.getName();
-                    System.out.println("Reading file:" + fileName + "...  ");
+                    System.out.println("Reading file:" + fileName + "...");
                     try {
                         sat = new LinkedHashMap<>();
                         path = new FileInputStream(iFile.getAbsolutePath());
@@ -161,16 +163,28 @@ public class CommonUtils {
             return null;
         }
         ArrayList<LinkedHashMap<Integer, ArrayList<Ellipse>>> eSatInfo = new ArrayList<>();
+        LinkedHashMap<Integer, ArrayList<Ellipse>> eSat = new LinkedHashMap<>();
+        ArrayList<Ellipse> circle = null;
         //遍历9卫星
         for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
+            int sNo=0;
             //对于一个具体的卫星(86400)
             for (Map.Entry<Integer, ArrayList<Position>> satEntry : curSat.entrySet()) {
-                //todo：Convert points to ellipses
+                ArrayList<Position> polyVertices = new ArrayList<>();
+                circle = new ArrayList<>();
+                polyVertices = satEntry.getValue();
+                double x1 = polyVertices.get(0).getLongitude();
+                double y1 = polyVertices.get(0).getLatitude();
+                double x2 = polyVertices.get(10).getLongitude();
+                double y2 = polyVertices.get(10).getLatitude();
+                double radius = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))/2;
+                circle.add(new Ellipse((x1 + x2) / 2, (y1 + y2) / 2, radius));
+                eSat.put(sNo,circle);
+                sNo++;
             }
+            eSatInfo.add(eSat);
         }
-
-
-        satInfo.clear();// 释放原始卫星数据占用的内存
+//        satInfo.clear();// 释放原始卫星数据占用的内存  todo:open satInfo.clear();
         return eSatInfo;
     }
 

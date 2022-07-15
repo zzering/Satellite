@@ -18,16 +18,15 @@ public class Satellite {
         statelliteService();
     }
 
-
     public static void statelliteService() {
         ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo = new ArrayList<>();
-
         Scanner scanner = new Scanner(System.in);
+
         double startTime = System.currentTimeMillis();
         bufferReadSatInfo(satInfo);
         readTarInfo();
-        double t1 = System.currentTimeMillis();
-        double readTime = (t1 - startTime) / 1000;
+        double t0 = System.currentTimeMillis();
+        double readTime = (t0 - startTime) / 1000;
         System.out.println("readTime: " + readTime + "s");
 //        System.out.printf("%.2fs\n", readTime);
         int ch = 0;
@@ -36,29 +35,48 @@ public class Satellite {
             System.out.println("请输入指令序号");
             System.out.println("1.计算点目标的时间窗口和间隙");
             System.out.println("2.计算区域目标的覆盖率");
+            System.out.println("3.计算");
+            System.out.println("4.重新读取原始卫星数据");
             ch = scanner.nextInt();
             switch (ch) {
                 case 1: {
                     if (satInfo.isEmpty()) {
                         System.out.println("请先读取原始卫星数据");
                     }
-                    double t2 = System.currentTimeMillis();
+                    double t1 = System.currentTimeMillis();
                     timeWindow(satInfo);
-                    double t3 = System.currentTimeMillis();
-                    double calcTime = (t3 - t2) / 1000;
+                    double t2 = System.currentTimeMillis();
+                    double calcTime = (t2 - t1) / 1000;
                     System.out.println("calcTime: " + calcTime + "s");
                     break;
                 }
                 case 2: {
                     ArrayList<LinkedHashMap<Integer, ArrayList<Ellipse>>> eSatInfo = new ArrayList<>();
+                    double t1 = System.currentTimeMillis();
                     eSatInfo = toEllipse(satInfo);
+                    double t2 = System.currentTimeMillis();
+                    double calcTime = (t2 - t1) / 1000;
+                    System.out.println("calcTime: " + calcTime + "s");
+                    break;
+                }
+                case 3:{
+
+                    break;
+                }
+                case 4:{
+                    if (!satInfo.isEmpty()) {
+                        satInfo.clear();
+                    }
+                    double t1 = System.currentTimeMillis();
+                    bufferReadSatInfo(satInfo);
+                    double t2 = System.currentTimeMillis();
+                    double calcTime = (t2 - t1) / 1000;
+                    System.out.println("readTime: " + calcTime + "s");
                     break;
                 }
             }
         }
     }
-
-
 }
 
 
