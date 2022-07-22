@@ -8,26 +8,31 @@ import java.util.*;
 
 import static com.zerin.utils.CommonUtils.pointInPolygon;
 import static com.zerin.utils.CommonUtils.toDate;
+import static com.zerin.utils.Constant.*;
 
 public class TimeCalc {
 
-    //存放第一题的target city数据
+    /**
+     * 存放第一题的target city数据
+     */
     static ArrayList<LinkedHashMap<String, ArrayList<Position>>> targetInfo = new ArrayList<>();
 
-    //读第一题的target city数据
+    /**
+     * 读第一题的target city数据
+     */
     public static void readTarInfo() {
         LinkedHashMap<String, ArrayList<Position>> target = new LinkedHashMap<>();
         Position pos = null;
         ArrayList<Position> posInfo;
         InputStream path = null;
-        File file = new File("Data/TargetInfo/target.txt");
+        File file = new File(CITY_DATA_PATH);
         if (file.exists()) {
             String fileName = file.getName();
             System.out.println("Reading file:" + fileName + "...  ");
             try {
                 path = new FileInputStream(file.getAbsolutePath());
                 Scanner scanner = new Scanner(path);
-                for (int i = 0; i < 24; i++) {//24 cities
+                for (int i = 0; i < CITY_NUM; i++) {//24 cities
                     pos = new Position();
                     posInfo = new ArrayList<>();
                     String cityName = scanner.next();
@@ -36,8 +41,8 @@ public class TimeCalc {
                     if (a < 0) {
                         a += 360;//longitude can't be a negative number
                     }
-                    pos.setLongitude(a);
-                    pos.setLatitude(b);
+                    pos.setLng(a);
+                    pos.setLat(b);
                     posInfo.add(pos);
 //                    System.out.println(cityName + " " + a + " " + b);
                     target.put(cityName, posInfo);
@@ -51,13 +56,16 @@ public class TimeCalc {
         }
     }
 
-    //计算卫星星座对每个点目标的可见时间窗口 对每个点目标的二重覆盖时间窗口
-    //计算卫星星座对每个点目标的覆盖时间间隙 统计每个点目标时间间隙的最大值和平均值
+    /**
+     * 计算卫星星座对每个点目标的可见时间窗口 对每个点目标的二重覆盖时间窗口
+     * 计算卫星星座对每个点目标的覆盖时间间隙 统计每个点目标时间间隙的最大值和平均值
+     * @param satInfo
+     */
     public static void timeWindow(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
         PrintStream defaultOut = System.out;//保存系统默认的打印输出流缓存
         PrintStream ps = null;
         try {
-            ps = new PrintStream("Result/timeWindow.txt");
+            ps = new PrintStream(RESULT_DATA_PATH);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -135,7 +143,10 @@ public class TimeCalc {
         System.out.println("done");
     }
 
-    //二重覆盖时间窗口
+    /**
+     * 二重覆盖时间窗口
+     * @param timeWindows
+     */
     public static void doubleTimeWindow(ArrayList<TimeWindow> timeWindows) {
         System.out.println("二重覆盖时间窗口: ");
         Iterator<TimeWindow> iterator1 = timeWindows.iterator();
@@ -173,7 +184,11 @@ public class TimeCalc {
         }
     }
 
-    //覆盖时间间隙
+    /**
+     * 覆盖时间间隙
+     * @param tmpMaxGap
+     * @param allGaps
+     */
     public static void gapTimeWindow(ArrayList<Integer> tmpMaxGap, ArrayList<Integer> allGaps) {
         int maxGap = 0;
         if (tmpMaxGap.size() != 0) {

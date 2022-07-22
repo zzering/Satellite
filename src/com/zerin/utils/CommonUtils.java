@@ -1,21 +1,26 @@
 package com.zerin.utils;
 
-import com.zerin.model.Ellipse;
+import com.zerin.model.Circle;
 import com.zerin.model.Position;
 
 import java.io.*;
 import java.util.*;
 
+import static com.zerin.utils.Constant.*;
+
 public class CommonUtils {
 
-    //读取原始卫星数据
-    //无缓冲的读取 用时110s左右
+    /**
+     * 读取原始卫星数据
+     * 无缓冲的读取 用时110s左右
+     * @param satInfo
+     */
     public static void readSatInfo(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
         LinkedHashMap<Integer, ArrayList<Position>> sat = null;
         Position pos = null;
         ArrayList<Position> posInfo = null;
         InputStream path = null;
-        File file = new File("Data/SatelliteInfo");
+        File file = new File(SAT_DATA_PATH);
         if (file.exists()) {
             System.out.println("正在读取原始卫星数据...");
             File[] files = file.listFiles();
@@ -38,8 +43,8 @@ public class CommonUtils {
                                 pos = new Position();
                                 double a = scanner.nextDouble();
                                 double b = scanner.nextDouble();
-                                pos.setLongitude(a);
-                                pos.setLatitude(b);
+                                pos.setLng(a);
+                                pos.setLat(b);
                                 posInfo.add(pos);
                             }
                             scanner.nextLine();//除去" "
@@ -57,14 +62,17 @@ public class CommonUtils {
         }
     }
 
-    //读取原始卫星数据
-    //带缓冲的读取 用时15s左右
+    /**
+     * 读取原始卫星数据
+     * 带缓冲的读取 用时15s左右
+     * @param satInfo
+     */
     public static void bufferReadSatInfo(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
         LinkedHashMap<Integer, ArrayList<Position>> sat = null;
         Position pos = null;
         ArrayList<Position> posInfo = null;
         InputStream path = null;
-        File file = new File("Data/SatelliteInfo");
+        File file = new File(SAT_DATA_PATH);
         if (file.exists()) {
             System.out.println("正在读取原始卫星数据...");
             File[] files = file.listFiles();
@@ -91,8 +99,8 @@ public class CommonUtils {
                                 //while(st.hasMoreElements()){}
                                 double a = Double.parseDouble((String) st.nextElement());
                                 double b = Double.parseDouble((String) st.nextElement());
-                                pos.setLongitude(a);
-                                pos.setLatitude(b);
+                                pos.setLng(a);
+                                pos.setLat(b);
                                 posInfo.add(pos);
                             }
                             sat.put(i, posInfo);
@@ -108,7 +116,11 @@ public class CommonUtils {
         }
     }
 
-    //秒数转日期
+    /**
+     * 秒数转日期
+     * @param time
+     * @return
+     */
     public static StringBuilder toDate(int time) {
         if (time == 86400) {
             StringBuilder lastDate = new StringBuilder();
@@ -126,22 +138,27 @@ public class CommonUtils {
         return date;
     }
 
-    //从需要判断的点向x轴负方向引一条射线，判断多边形的每一条边与这条射线是否有交点
+    /**
+     * 从需要判断的点向x轴负方向引一条射线，判断多边形的每一条边与这条射线是否有交点
+     * @param pos
+     * @param polyVertices
+     * @return
+     */
     public static boolean pointInPolygon(Position pos, ArrayList<Position> polyVertices) {
         int i, j = polyVertices.size() - 1;
         boolean inside = false;
-        double x = pos.getLongitude();
-        double y = pos.getLatitude();
+        double x = pos.getLng();
+        double y = pos.getLat();
         Position a = new Position();
         Position b = new Position();
         for (i = 0; i < polyVertices.size(); i++) {
             a = polyVertices.get(i);
             b = polyVertices.get(j);
-            if (((a.getLatitude() < y && b.getLatitude() >= y)
-                    || (b.getLatitude() < y && a.getLatitude() >= y))//保证射线在多边形这条边的y值范围内
-                    && (a.getLongitude() <= x || b.getLongitude() <= x)) {//除去 需判断的点在边的左边的情况
+            if (((a.getLat() < y && b.getLat() >= y)
+                    || (b.getLat() < y && a.getLat() >= y))//保证射线在多边形这条边的y值范围内
+                    && (a.getLng() <= x || b.getLng() <= x)) {//除去 需判断的点在边的左边的情况
                 //射线与边交点的x坐标
-                double abx = a.getLongitude() + (y - a.getLatitude()) / (b.getLatitude() - a.getLatitude()) * (b.getLongitude() - a.getLongitude());
+                double abx = a.getLng() + (y - a.getLat()) / (b.getLat() - a.getLat()) * (b.getLng() - a.getLng());
                 boolean bTmp;
                 //点在多边形的边上，也算在多边形内
                 if (abx == x) {
@@ -156,15 +173,19 @@ public class CommonUtils {
         return inside;
     }
 
-    //Convert points to ellipses
-    public static ArrayList<LinkedHashMap<Integer, ArrayList<Ellipse>>> toEllipse(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
+    /**
+     * Convert points to circle
+     * @param satInfo
+     * @return
+     */
+    public static ArrayList<LinkedHashMap<Integer, ArrayList<Circle>>> toCircle(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
         if (satInfo.isEmpty()) {
             System.out.println("请先读取原始卫星数据");
             return null;
         }
-        ArrayList<LinkedHashMap<Integer, ArrayList<Ellipse>>> eSatInfo = new ArrayList<>();
-        LinkedHashMap<Integer, ArrayList<Ellipse>> eSat = new LinkedHashMap<>();
-        ArrayList<Ellipse> circle = null;
+        ArrayList<LinkedHashMap<Integer, ArrayList<Circle>>> cSatInfo = new ArrayList<>();
+        LinkedHashMap<Integer, ArrayList<Circle>> cSat = new LinkedHashMap<>();
+        ArrayList<Circle> circle = null;
         //遍历9卫星
         for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
             int sNo=0;
@@ -173,20 +194,42 @@ public class CommonUtils {
                 ArrayList<Position> polyVertices = new ArrayList<>();
                 circle = new ArrayList<>();
                 polyVertices = satEntry.getValue();
-                double x1 = polyVertices.get(0).getLongitude();
-                double y1 = polyVertices.get(0).getLatitude();
-                double x2 = polyVertices.get(10).getLongitude();
-                double y2 = polyVertices.get(10).getLatitude();
+                double x1 = polyVertices.get(0).getLng();
+                double y1 = polyVertices.get(0).getLat();
+                double x2 = polyVertices.get(10).getLng();
+                double y2 = polyVertices.get(10).getLat();
                 double radius = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))/2;
-                circle.add(new Ellipse((x1 + x2) / 2, (y1 + y2) / 2, radius));
-                eSat.put(sNo,circle);
+                circle.add(new Circle((x1 + x2) / 2, (y1 + y2) / 2, radius));
+                cSat.put(sNo,circle);
                 sNo++;
             }
-            eSatInfo.add(eSat);
+            cSatInfo.add(cSat);
         }
 //        satInfo.clear();// 释放原始卫星数据占用的内存  todo:open satInfo.clear();
-        return eSatInfo;
+        return cSatInfo;
     }
+
+    /**
+     * 判断点是否在圆内
+     * @param pos
+     * @param circle
+     * @return
+     */
+    public static boolean pointInCircle(Position pos, ArrayList<Circle> circle) {
+        double x0,y0,x,y,r,distance;
+        x0=pos.getLng();
+        y0=pos.getLat();
+        x=circle.get(0).getX();
+        y=circle.get(0).getY();
+        r=circle.get(0).getR();
+        distance=Math.sqrt(Math.pow((x-x0),2)+Math.pow((y-y0),2));
+        if(distance>r){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
 }
 

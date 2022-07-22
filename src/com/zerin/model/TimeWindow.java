@@ -3,8 +3,8 @@ package com.zerin.model;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
 @Getter
+@Setter
 public class TimeWindow {
     int satNo;
     int startTime;
