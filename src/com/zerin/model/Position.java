@@ -8,4 +8,11 @@ import lombok.Setter;
 public class Position {
     double lng;//longitude
     double lat;//latitude
+
+    public Position(){}
+
+    public Position(double x,double y){
+        lng=x;
+        lat=y;
+    }
 }

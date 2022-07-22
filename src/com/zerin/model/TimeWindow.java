@@ -10,8 +10,7 @@ public class TimeWindow {
     int startTime;
     int endTime;
 
-    public TimeWindow(){
-    }
+    public TimeWindow(){}
 
     public TimeWindow(int sat, int start, int end){
         satNo=sat;

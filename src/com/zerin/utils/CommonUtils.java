@@ -178,29 +178,26 @@ public class CommonUtils {
      * @param satInfo
      * @return
      */
-    public static ArrayList<LinkedHashMap<Integer, ArrayList<Circle>>> toCircle(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
+    public static ArrayList<LinkedHashMap<Integer, Circle>> toCircle(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
         if (satInfo.isEmpty()) {
             System.out.println("请先读取原始卫星数据");
             return null;
         }
-        ArrayList<LinkedHashMap<Integer, ArrayList<Circle>>> cSatInfo = new ArrayList<>();
-        LinkedHashMap<Integer, ArrayList<Circle>> cSat = new LinkedHashMap<>();
-        ArrayList<Circle> circle = null;
+        ArrayList<LinkedHashMap<Integer, Circle>> cSatInfo = new ArrayList<>();
+        LinkedHashMap<Integer, Circle> cSat = new LinkedHashMap<>();
         //遍历9卫星
         for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
             int sNo=0;
             //对于一个具体的卫星(86400)
             for (Map.Entry<Integer, ArrayList<Position>> satEntry : curSat.entrySet()) {
                 ArrayList<Position> polyVertices = new ArrayList<>();
-                circle = new ArrayList<>();
                 polyVertices = satEntry.getValue();
                 double x1 = polyVertices.get(0).getLng();
                 double y1 = polyVertices.get(0).getLat();
                 double x2 = polyVertices.get(10).getLng();
                 double y2 = polyVertices.get(10).getLat();
                 double radius = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))/2;
-                circle.add(new Circle((x1 + x2) / 2, (y1 + y2) / 2, radius));
-                cSat.put(sNo,circle);
+                cSat.put(sNo,new Circle((x1 + x2) / 2, (y1 + y2) / 2, radius));
                 sNo++;
             }
             cSatInfo.add(cSat);
@@ -215,13 +212,13 @@ public class CommonUtils {
      * @param circle
      * @return
      */
-    public static boolean pointInCircle(Position pos, ArrayList<Circle> circle) {
+    public static boolean pointInCircle(Position pos, Circle circle) {
         double x0,y0,x,y,r,distance;
         x0=pos.getLng();
         y0=pos.getLat();
-        x=circle.get(0).getX();
-        y=circle.get(0).getY();
-        r=circle.get(0).getR();
+        x=circle.getX();
+        y=circle.getY();
+        r=circle.getR();
         distance=Math.sqrt(Math.pow((x-x0),2)+Math.pow((y-y0),2));
         if(distance>r){
             return false;

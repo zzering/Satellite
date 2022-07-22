@@ -12,9 +12,7 @@ import static com.zerin.utils.Constant.*;
 
 public class TimeCalc {
 
-    /**
-     * 存放第一题的target city数据
-     */
+    //存放第一题的target city数据
     static ArrayList<LinkedHashMap<String, ArrayList<Position>>> targetInfo = new ArrayList<>();
 
     /**
@@ -61,24 +59,26 @@ public class TimeCalc {
      * 计算卫星星座对每个点目标的覆盖时间间隙 统计每个点目标时间间隙的最大值和平均值
      * @param satInfo
      */
-    public static void timeWindow(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
+    public static LinkedHashMap<Integer, ArrayList<TimeWindow>> timeWindow(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
         PrintStream defaultOut = System.out;//保存系统默认的打印输出流缓存
         PrintStream ps = null;
         try {
-            ps = new PrintStream(RESULT_DATA_PATH);
+            ps = new PrintStream(RESULT1_DATA_PATH);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         System.setOut(ps);//输出流->文件
+        LinkedHashMap<Integer, ArrayList<TimeWindow>> timeWindowsInfo =new LinkedHashMap<>();
         //遍历第一题中的24城市
         for (Map<String, ArrayList<Position>> curTar : targetInfo) {
+            int cityNo=0;//城市序号
             //对于一个具体的城市(24)
             for (Map.Entry<String, ArrayList<Position>> tarEntry : curTar.entrySet()) {
                 ArrayList<TimeWindow> timeWindows = new ArrayList<>();//记录每个target的时间窗口 用于计算二重覆盖
                 ArrayList<Integer> tmpMaxGap = new ArrayList<>();//每个点目标时间间隙的最大值
                 ArrayList<Integer> allGaps = new ArrayList<>();//每个点目标时间间隙
                 System.out.println(tarEntry.getKey() + ":");//城市名
-                int satNo = 0;
+                int satNo = 0;//卫星序号
                 //遍历9卫星
                 for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
                     boolean flag1 = true;
@@ -136,11 +136,14 @@ public class TimeCalc {
                 }
                 doubleTimeWindow(timeWindows);//计算二重窗口
                 gapTimeWindow(tmpMaxGap, allGaps);//计算覆盖时间间隙
+                timeWindowsInfo.put(cityNo,timeWindows);
+                cityNo++;
             }
         }
         ps.close();
         System.setOut(defaultOut);//输出流->系统
         System.out.println("done");
+        return timeWindowsInfo;
     }
 
     /**

@@ -10,6 +10,8 @@ public class Circle {
     double y;
     double r;//=7.0068;//radius 经过验算，所有卫星的半径皆为7.0068
 
+    public Circle(){}
+
     public Circle(double x0, double y0, double r0){
         x=x0;
         y=y0;

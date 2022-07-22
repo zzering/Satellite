@@ -1,13 +1,16 @@
 package com.zerin.main;
 
+import com.zerin.model.Block;
 import com.zerin.model.Circle;
 import com.zerin.model.Position;
+import com.zerin.model.TimeWindow;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 
 import static com.zerin.service.TimeCalc.*;
+import static com.zerin.service.CoverageCalc.*;
 import static com.zerin.utils.CommonUtils.*;
 //第一题:
 //计算卫星星座对每个点目标的可见时间窗口 对每个点目标的二重覆盖时间窗口
@@ -25,11 +28,16 @@ public class Satellite {
     }
 
     public static void statelliteService() {
+        //原始卫星数据 Integer->satNo
         ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo = new ArrayList<>();
-        ArrayList<LinkedHashMap<Integer, ArrayList<Circle>>> cSatInfo = new ArrayList<>();
+        //转化成圆之后的卫星数据 Integer->satNo
+        ArrayList<LinkedHashMap<Integer, Circle>> cSatInfo = new ArrayList<>();
+        //每个城市的时间窗口结果 Integer->cityNo
+        LinkedHashMap<Integer, ArrayList<TimeWindow>> timeWindowsInfo = new LinkedHashMap<>();
+        //每秒的瞬时覆盖率结果
+        ArrayList<LinkedHashMap<Integer, ArrayList<Block>>> coverageInfo = new ArrayList<>();
 
         Scanner scanner = new Scanner(System.in);
-
         double startTime = System.currentTimeMillis();
         bufferReadSatInfo(satInfo);
         readTarInfo();
@@ -52,7 +60,7 @@ public class Satellite {
                         System.out.println("请先读取原始卫星数据");
                     }
                     double t1 = System.currentTimeMillis();
-                    timeWindow(satInfo);
+                    timeWindowsInfo = timeWindow(satInfo);
                     double t2 = System.currentTimeMillis();
                     double calcTime = (t2 - t1) / 1000;
                     System.out.println("calcTime: " + calcTime + "s");
@@ -61,6 +69,7 @@ public class Satellite {
                 case 2: {
                     double t1 = System.currentTimeMillis();
                     cSatInfo = toCircle(satInfo);
+                    coverage(cSatInfo);
                     double t2 = System.currentTimeMillis();
                     double calcTime = (t2 - t1) / 1000;
                     System.out.println("calcTime: " + calcTime + "s");
