@@ -36,9 +36,9 @@ public class CommonUtils {
                         sat = new LinkedHashMap<>();
                         path = new FileInputStream(iFile.getAbsolutePath());
                         Scanner scanner = new Scanner(path);
-                        scanner.nextLine();//只除去第一行的日期
+                        scanner.nextLine();// 只除去第一行的日期
                         for (int i = 0; i < 86400; i++) {
-                            posInfo = new ArrayList<>();//!
+                            posInfo = new ArrayList<>();// !
                             for (int j = 0; j < 21; j++) {
                                 pos = new Position();
                                 double a = scanner.nextDouble();
@@ -47,8 +47,8 @@ public class CommonUtils {
                                 pos.setLat(b);
                                 posInfo.add(pos);
                             }
-                            scanner.nextLine();//除去" "
-                            scanner.nextLine();//不读取日期
+                            scanner.nextLine();// 除去" "
+                            scanner.nextLine();// 不读取日期
                             sat.put(i, posInfo);
                         }
                     } catch (Exception e) {
@@ -89,14 +89,14 @@ public class CommonUtils {
                         path = new FileInputStream(iFile.getAbsolutePath());
                         BufferedReader br = new BufferedReader(new InputStreamReader(path));
                         for (int i = 0; i < 86400; i++) {
-                            br.readLine();//除去每个日期
-                            posInfo = new ArrayList<>();//!
+                            br.readLine();// 除去每个日期
+                            posInfo = new ArrayList<>();// !
                             for (int j = 0; j < 21; j++) {
                                 String str = null;
                                 pos = new Position();
                                 str = br.readLine();
-                                StringTokenizer st = new StringTokenizer(str, "\t");//分割经纬度
-                                //while(st.hasMoreElements()){}
+                                StringTokenizer st = new StringTokenizer(str, "\t");// 分割经纬度
+                                // while(st.hasMoreElements()){}
                                 double a = Double.parseDouble((String) st.nextElement());
                                 double b = Double.parseDouble((String) st.nextElement());
                                 pos.setLng(a);
@@ -155,12 +155,12 @@ public class CommonUtils {
             a = polyVertices.get(i);
             b = polyVertices.get(j);
             if (((a.getLat() < y && b.getLat() >= y)
-                    || (b.getLat() < y && a.getLat() >= y))//保证射线在多边形这条边的y值范围内
-                    && (a.getLng() <= x || b.getLng() <= x)) {//除去 需判断的点在边的左边的情况
-                //射线与边交点的x坐标
+                    || (b.getLat() < y && a.getLat() >= y))// 保证射线在多边形这条边的y值范围内
+                    && (a.getLng() <= x || b.getLng() <= x)) {// 除去 需判断的点在边的左边的情况
+                // 射线与边交点的x坐标
                 double abx = a.getLng() + (y - a.getLat()) / (b.getLat() - a.getLat()) * (b.getLng() - a.getLng());
                 boolean bTmp;
-                //点在多边形的边上，也算在多边形内
+                // 点在多边形的边上，也算在多边形内
                 if (abx == x) {
                     return true;
                 } else {
@@ -185,10 +185,10 @@ public class CommonUtils {
         }
         ArrayList<LinkedHashMap<Integer, Circle>> cSatInfo = new ArrayList<>();
         LinkedHashMap<Integer, Circle> cSat = new LinkedHashMap<>();
-        //遍历9卫星
+        // 遍历9卫星
         for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
             int sNo=0;
-            //对于一个具体的卫星(86400)
+            // 对于一个具体的卫星(86400)
             for (Map.Entry<Integer, ArrayList<Position>> satEntry : curSat.entrySet()) {
                 ArrayList<Position> polyVertices = new ArrayList<>();
                 polyVertices = satEntry.getValue();
@@ -202,7 +202,7 @@ public class CommonUtils {
             }
             cSatInfo.add(cSat);
         }
-//        satInfo.clear();// 释放原始卫星数据占用的内存  todo:open satInfo.clear();
+        satInfo.clear();//  释放原始卫星数据占用的内存  todo:open satInfo.clear();
         return cSatInfo;
     }
 
@@ -216,8 +216,8 @@ public class CommonUtils {
         double x0,y0,x,y,r,distance;
         x0=pos.getLng();
         y0=pos.getLat();
-        x=circle.getX();
-        y=circle.getY();
+        x=circle.getLng();
+        y=circle.getLat();
         r=circle.getR();
         distance=Math.sqrt(Math.pow((x-x0),2)+Math.pow((y-y0),2));
         if(distance>r){

@@ -1,6 +1,6 @@
 # **卫星对地覆盖计算及任务规划**
 
-## 开发环境
+## 环境配置
 
 Windows10	idea	Java  
 jar包:lombok-1.18.16.jar	JUnit4
@@ -98,9 +98,15 @@ pointInCircle方法
 
 将点与圆心距离与半径进行比较
 
-#### 3.
+#### 3.对不确定的block进行再划分
 
+reDivision方法
 
+由原来已知的一个点(左上角 橘)和边长 得到新的3个点(绿) 从而完成划分
+
+![image-20220811164130165](img/image-20220811164130165.png)
+
+4.
 
 
 
@@ -112,4 +118,4 @@ C++的读取文件经过缓冲优化之后变快不少,但是将缓存中的数�
 
 ## 参考
 
-https://www.cnblogs.com/luxiaoxun/p/3722358.html
+https:// www.cnblogs.com/luxiaoxun/p/3722358.html
