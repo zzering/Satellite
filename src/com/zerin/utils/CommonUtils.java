@@ -83,6 +83,9 @@ public class CommonUtils {
             } else {
                 for (File iFile : files) {
                     String fileName = iFile.getName();
+                    if(fileName.equals("SatCoverInfo_4.txt")){
+                        return;
+                    }
                     System.out.println("Reading file:" + fileName + "...");
                     try {
                         sat = new LinkedHashMap<>();

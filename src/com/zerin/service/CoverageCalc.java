@@ -6,10 +6,8 @@ import com.zerin.model.Position;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.Map.Entry;
 
 import static com.zerin.utils.CommonUtils.*;
 import static com.zerin.utils.Constant.RESULT2_DATA_PATH;
@@ -37,33 +35,47 @@ public class CoverageCalc {
         System.setOut(ps);// 输出流->文件
 
         ArrayList<LinkedHashMap<Integer, ArrayList<Block>>> coverageInfo = new ArrayList<>();// 每秒的瞬时覆盖率数据
+        LinkedHashMap<Integer, ArrayList<Block>> allBlocks = new LinkedHashMap<>();
+
+        // 秒数86400
+        for (int i = 0; i < 86400; i++) {
+            ArrayList<Block> blocks = new ArrayList<>();
+            // iterate over the blocks
+            blockDivision(blocks);// 初始化网格
+            allBlocks.put(i, blocks);
+        }
         // for every satellites and every seconds
-        for (Map<Integer, Circle> curSat : cSatInfo) {// 9
-            int secondNo = 0;// 记录秒数
-            LinkedHashMap<Integer, ArrayList<Block>> coverage = new LinkedHashMap<>();
-            for (Map.Entry<Integer, Circle> cSatEntry : curSat.entrySet()) {// 86400
-
-                ArrayList<Block> blocks = new ArrayList<>();
-                // iterate over the blocks
-                blockDivision(blocks);// 初始化网格
-
+        for (Map<Integer, Circle> curSat : cSatInfo) {// 9sat
+            Iterator<Entry<Integer, ArrayList<Block>>> iterator=allBlocks.entrySet().iterator();
+            int secondNo=0;
+            for (Entry<Integer, Circle> cSatEntry : curSat.entrySet()) {// 秒数86400
+                Entry<Integer, ArrayList<Block>> blocksEntry;
+                if(iterator.hasNext()){
+                    blocksEntry =iterator.next();
+                }else {
+                    System.out.println("LinkedHashMap<Integer, ArrayList<Block>> allBlocks iterate error");
+                    return null;
+                }
                 // 将网格一分为四，然后判断新的网格是否会被卫星覆盖，直到不确定的网格面积之和与总面积之比小于 0.1%停止
-                double totalArea=99,unsureArea=0;
-                for (Block curBlock : blocks) {// 得到每秒的网格情况
+                double totalArea = 99, unsureArea = 0;
+                HashMap<Double, Integer> unsureBlocksLng=new HashMap<>();// 不能确定的表格坐标(只记录经度即可)
+                ArrayList<Block> unsureBlocks=new ArrayList<>();// 存放因不能确定而新分割的表格
+
+                for (Block curBlock : blocksEntry.getValue()) {// 得到每秒的网格情况
                     // 四点全在圆内 inside 3 unsure 2 outside 1 init 0
                     blockInCircle(curBlock, cSatEntry.getValue());
 
-                    if(unsureArea/totalArea<=0.001){
-                        break;
+                    if (unsureArea / totalArea <= 0.001) {
+                        //break;
                     }
                     // 通过curBlock.getStatue() == ?的状态判断是否进行划分
                     // 当block状态不确定时
                     if (curBlock.getStatue() == 2) {
-                        reDivision(curBlock,blocks);
+                        reDivision(curBlock, unsureBlocksLng,unsureBlocks);
                     }
                 }
-                // 记录每秒的网格情况
-                coverage.put(secondNo, blocks);
+                // 修改数组中对应网格的边长;加入新网格中存放的分化的那些表格
+
                 secondNo++;
             }
         }
@@ -100,13 +112,20 @@ public class CoverageCalc {
 
     /**
      * 对不确定的block进行再划分
+     *
      * @param curBlock
      * @param blocks
      */
-    public static void reDivision(Block curBlock, ArrayList<Block> blocks) {
+    public static void reDivision(Block curBlock,HashMap<Double,Integer> unsureBlocksLng,ArrayList<Block> blocks) {
         double x1 = curBlock.getLng();
         double y1 = curBlock.getLat();
         double edge = curBlock.getEdgelen() / 2;
+        // hashMap的put方法既是修改也是添加
+        if(unsureBlocksLng.containsKey(x1)){// 之前划分过 则+1 代表增加了一次划分次数
+            unsureBlocksLng.put(x1,unsureBlocksLng.get(x1)+1);
+        }else {
+            unsureBlocksLng.put(x1,1);
+        }
         curBlock.setEdgelen(edge);
         blocks.add(new Block(x1 + edge, y1, edge, 0));
         blocks.add(new Block(x1, y1 + edge, edge, 0));
