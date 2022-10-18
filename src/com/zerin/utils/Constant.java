@@ -6,5 +6,4 @@ public interface Constant {
     String CITY_DATA_PATH = "Data/TargetInfo/target.txt";// 第一题用到的城市数据文件的相对路径
     String RESULT1_DATA_PATH = "Result/timeWindow.txt";// 第一题计算结果输出文件的相对路径
     String RESULT2_DATA_PATH = "Result/coverage.txt";// 第二题计算结果输出文件的相对路径
-
 }

@@ -83,6 +83,7 @@ public class CommonUtils {
             } else {
                 for (File iFile : files) {
                     String fileName = iFile.getName();
+                    // todo:readfile pause
                     if(fileName.equals("SatCoverInfo_4.txt")){
                         return;
                     }

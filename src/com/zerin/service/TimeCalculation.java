@@ -10,7 +10,7 @@ import static com.zerin.utils.CommonUtils.pointInPolygon;
 import static com.zerin.utils.CommonUtils.toDate;
 import static com.zerin.utils.Constant.*;
 
-public class TimeCalc {
+public class TimeCalculation {
 
     // 存放第一题的target city数据
     static ArrayList<LinkedHashMap<String, ArrayList<Position>>> targetInfo = new ArrayList<>();

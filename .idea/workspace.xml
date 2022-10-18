@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7a4947b7-8a57-4542-8747-d9bda71d1542" name="Default Changelist" comment="">
+    <list default="true" id="7a4947b7-8a57-4542-8747-d9bda71d1542" name="Default Changelist" comment="v2.01 todo:change the logic of coverage function in CoverageCalc.java">
       <change afterPath="$PROJECT_DIR$/src/com/zerin/test/Ztest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Satellite/com/zerin/main/Satellite.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Satellite/com/zerin/main/Satellite.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/zerin/main/Satellite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/zerin/main/Satellite.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/zerin/service/CoverageCalc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/zerin/service/CoverageCalc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/zerin/service/CoverageCalc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/zerin/service/CoverageCalculation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/zerin/service/TimeCalc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/zerin/service/TimeCalculation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/zerin/test/ServiceTest.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/zerin/utils/CommonUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/zerin/utils/CommonUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/zerin/utils/Constant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/zerin/utils/Constant.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -194,7 +196,7 @@
       <workItem from="1663722899113" duration="11901000" />
       <workItem from="1664180797759" duration="68000" />
       <workItem from="1665219514182" duration="182000" />
-      <workItem from="1666017025493" duration="601000" />
+      <workItem from="1666017025493" duration="5483000" />
     </task>
     <task id="LOCAL-00001" summary="0.7">
       <created>1656984152859</created>
@@ -287,7 +289,14 @@
       <option name="project" value="LOCAL" />
       <updated>1660210550772</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="v2.01 todo:change the logic of coverage function in CoverageCalc.java">
+      <created>1666017694721</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1666017694721</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -329,7 +338,8 @@
     <MESSAGE value="Code normalization" />
     <MESSAGE value="Simplified the data structure of cSatInfo and added Block class" />
     <MESSAGE value="todo:change the logic of coverage function in CoverageCalc.java" />
-    <option name="LAST_COMMIT_MESSAGE" value="todo:change the logic of coverage function in CoverageCalc.java" />
+    <MESSAGE value="v2.01 todo:change the logic of coverage function in CoverageCalc.java" />
+    <option name="LAST_COMMIT_MESSAGE" value="v2.01 todo:change the logic of coverage function in CoverageCalc.java" />
   </component>
   <component name="WindowStateProjectService">
     <state x="361" y="71" key="#Notifications" timestamp="1657671006273">
@@ -344,11 +354,11 @@
       <screen x="0" y="0" width="1920" height="1049" />
     </state>
     <state x="293" y="391" key="#com.intellij.refactoring.move.moveInstanceMethod.MoveInstanceMethodDialog/0.0.1920.1049@0.0.1920.1049" timestamp="1662825451515" />
-    <state x="262" y="14" key="CommitChangelistDialog2" timestamp="1660210549785">
+    <state x="262" y="14" key="CommitChangelistDialog2" timestamp="1666017693628">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state x="169" y="6" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1657671035748" />
-    <state x="262" y="14" key="CommitChangelistDialog2/0.0.1536.834@0.0.1536.834" timestamp="1660210549785" />
+    <state x="262" y="14" key="CommitChangelistDialog2/0.0.1536.834@0.0.1536.834" timestamp="1666017693628" />
     <state width="485" height="375" key="DebuggerActiveHint" timestamp="1660297880073">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
@@ -362,39 +372,39 @@
       <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state x="592" y="221" key="FileChooserDialogImpl/0.0.1536.834@0.0.1536.834" timestamp="1658198676732" />
-    <state width="996" height="208" key="GridCell.Tab.0.bottom" timestamp="1663583349591">
-      <screen x="0" y="-1080" width="1920" height="1050" />
+    <state width="1493" height="152" key="GridCell.Tab.0.bottom" timestamp="1666102180973">
+      <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state width="1493" height="362" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1657619386031" />
     <state width="996" height="208" key="GridCell.Tab.0.bottom/0.0.1536.834/0.-1080.1920.1050@0.-1080.1920.1050" timestamp="1663583349591" />
-    <state width="1493" height="157" key="GridCell.Tab.0.bottom/0.0.1536.834@0.0.1536.834" timestamp="1660635360463" />
+    <state width="1493" height="152" key="GridCell.Tab.0.bottom/0.0.1536.834@0.0.1536.834" timestamp="1666102180973" />
     <state width="1877" height="209" key="GridCell.Tab.0.bottom/0.0.1920.1049@0.0.1920.1049" timestamp="1663520076487" />
     <state width="914" height="77" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1662211813050" />
     <state width="1877" height="209" key="GridCell.Tab.0.bottom/0.1080.1536.839/0.0.1920.1049@0.0.1920.1049" timestamp="1663139615165" />
-    <state width="996" height="208" key="GridCell.Tab.0.center" timestamp="1663583349591">
-      <screen x="0" y="-1080" width="1920" height="1050" />
+    <state width="1493" height="152" key="GridCell.Tab.0.center" timestamp="1666102180973">
+      <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state width="1493" height="362" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1657619386030" />
     <state width="996" height="208" key="GridCell.Tab.0.center/0.0.1536.834/0.-1080.1920.1050@0.-1080.1920.1050" timestamp="1663583349591" />
-    <state width="1493" height="157" key="GridCell.Tab.0.center/0.0.1536.834@0.0.1536.834" timestamp="1660635360463" />
+    <state width="1493" height="152" key="GridCell.Tab.0.center/0.0.1536.834@0.0.1536.834" timestamp="1666102180973" />
     <state width="1877" height="209" key="GridCell.Tab.0.center/0.0.1920.1049@0.0.1920.1049" timestamp="1663520076486" />
     <state width="914" height="77" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1662211813050" />
     <state width="1877" height="209" key="GridCell.Tab.0.center/0.1080.1536.839/0.0.1920.1049@0.0.1920.1049" timestamp="1663139615165" />
-    <state width="996" height="208" key="GridCell.Tab.0.left" timestamp="1663583349590">
-      <screen x="0" y="-1080" width="1920" height="1050" />
+    <state width="1493" height="152" key="GridCell.Tab.0.left" timestamp="1666102180973">
+      <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state width="1493" height="362" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1657619386030" />
     <state width="996" height="208" key="GridCell.Tab.0.left/0.0.1536.834/0.-1080.1920.1050@0.-1080.1920.1050" timestamp="1663583349590" />
-    <state width="1493" height="157" key="GridCell.Tab.0.left/0.0.1536.834@0.0.1536.834" timestamp="1660635360462" />
+    <state width="1493" height="152" key="GridCell.Tab.0.left/0.0.1536.834@0.0.1536.834" timestamp="1666102180973" />
     <state width="1877" height="209" key="GridCell.Tab.0.left/0.0.1920.1049@0.0.1920.1049" timestamp="1663520076486" />
     <state width="914" height="77" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1662211813049" />
     <state width="1877" height="209" key="GridCell.Tab.0.left/0.1080.1536.839/0.0.1920.1049@0.0.1920.1049" timestamp="1663139615164" />
-    <state width="996" height="208" key="GridCell.Tab.0.right" timestamp="1663583349591">
-      <screen x="0" y="-1080" width="1920" height="1050" />
+    <state width="1493" height="152" key="GridCell.Tab.0.right" timestamp="1666102180973">
+      <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state width="1493" height="362" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1657619386031" />
     <state width="996" height="208" key="GridCell.Tab.0.right/0.0.1536.834/0.-1080.1920.1050@0.-1080.1920.1050" timestamp="1663583349591" />
-    <state width="1493" height="157" key="GridCell.Tab.0.right/0.0.1536.834@0.0.1536.834" timestamp="1660635360463" />
+    <state width="1493" height="152" key="GridCell.Tab.0.right/0.0.1536.834@0.0.1536.834" timestamp="1666102180973" />
     <state width="1877" height="209" key="GridCell.Tab.0.right/0.0.1920.1049@0.0.1920.1049" timestamp="1663520076486" />
     <state width="914" height="77" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1662211813050" />
     <state width="1877" height="209" key="GridCell.Tab.0.right/0.1080.1536.839/0.0.1920.1049@0.0.1920.1049" timestamp="1663139615165" />
@@ -441,11 +451,11 @@
     <state x="369" y="110" key="SettingsEditor/0.0.1536.834/0.-1080.1920.1050@0.0.1536.834" timestamp="1663567855806" />
     <state x="369" y="110" key="SettingsEditor/0.0.1536.834@0.0.1536.834" timestamp="1658455985354" />
     <state x="461" y="138" key="SettingsEditor/0.0.1920.1049@0.0.1920.1049" timestamp="1662818242270" />
-    <state x="442" y="202" key="Vcs.Push.Dialog.v2" timestamp="1660210556467">
+    <state x="442" y="202" key="Vcs.Push.Dialog.v2" timestamp="1666017700334">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state x="442" y="200" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1657671040251" />
-    <state x="442" y="202" key="Vcs.Push.Dialog.v2/0.0.1536.834@0.0.1536.834" timestamp="1660210556467" />
+    <state x="442" y="202" key="Vcs.Push.Dialog.v2/0.0.1536.834@0.0.1536.834" timestamp="1666017700334" />
     <state x="512" y="276" key="com.intellij.ide.util.TipDialog" timestamp="1666017032453">
       <screen x="0" y="0" width="1536" height="834" />
     </state>
@@ -460,9 +470,10 @@
       <screen x="0" y="0" width="1536" height="834" />
     </state>
     <state x="214" y="0" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.0.1536.834@0.0.1536.834" timestamp="1658455451877" />
-    <state x="584" y="294" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1666017631621">
-      <screen x="0" y="0" width="1536" height="834" />
+    <state x="551" y="305" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1666104839034">
+      <screen x="0" y="0" width="1449" height="864" />
     </state>
+    <state x="551" y="305" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1449.864@0.0.1449.864" timestamp="1666104839034" />
     <state x="230" y="353" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.824@0.0.1536.824" timestamp="1657670991673" />
     <state x="584" y="294" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1536.834@0.0.1536.834" timestamp="1666017631621" />
     <state x="447" y="150" width="782" height="600" key="find.popup" timestamp="1660184500319">
@@ -491,7 +502,7 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/com/zerin/service/CoverageCalc.java</url>
+          <url>file://$PROJECT_DIR$/src/com/zerin/service/CoverageCalculation.java</url>
           <line>73</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>

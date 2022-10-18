@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Scanner;
 
-import static com.zerin.service.TimeCalc.*;
-import static com.zerin.service.CoverageCalc.*;
+import static com.zerin.service.TimeCalculation.*;
+import static com.zerin.service.CoverageCalculation.*;
 import static com.zerin.utils.CommonUtils.*;
 
 /**

@@ -12,7 +12,9 @@ import java.util.Map.Entry;
 import static com.zerin.utils.CommonUtils.*;
 import static com.zerin.utils.Constant.RESULT2_DATA_PATH;
 
-public class CoverageCalc {
+public class CoverageCalculation {
+    // 存放第二题的计算结果
+    static ArrayList<LinkedHashMap<String, ArrayList<Position>>> targetInfo = new ArrayList<>();
 
     // 将75°E-135°E  0°N-55°N划分为 12*11边长为5°的网格
     public static void blockDivision(ArrayList<Block> blocks) {
@@ -75,7 +77,6 @@ public class CoverageCalc {
                     }
                 }
                 // 修改数组中对应网格的边长;加入新网格中存放的分化的那些表格
-
                 secondNo++;
             }
         }
@@ -103,7 +104,7 @@ public class CoverageCalc {
         Position pos4 = new Position(x1 + edge, y1 + edge);// 右下
         if (pointInCircle(pos1, cSatEntry)) {
             if (pointInCircle(pos2, cSatEntry)) {
-                if (pointInCircle(pos3, cSatEntry) || pointInCircle(pos4, cSatEntry)) {
+                if (pointInCircle(pos3, cSatEntry) && pointInCircle(pos4, cSatEntry)) {
                     curBlock.setStatue(3);// 四点全在圆内 inside 3 unsure 2 outside 1 init 0
                 }
             } else curBlock.setStatue(2);// 至少一点不在
@@ -132,3 +133,5 @@ public class CoverageCalc {
         blocks.add(new Block(x1 + edge, y1 + edge, edge, 0));
     }
 }
+
+// todo:建一个哈希表，把所有划分情况在哈希表里面更新！ 可以实现对每一个坐标进行标记，这样UNSURE情况里已经确定的节点就不必重复计算
