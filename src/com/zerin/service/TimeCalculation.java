@@ -59,7 +59,7 @@ public class TimeCalculation {
      * 计算卫星星座对每个点目标的覆盖时间间隙 统计每个点目标时间间隙的最大值和平均值
      * @param satInfo
      */
-    public static LinkedHashMap<Integer, ArrayList<TimeWindow>> timeWindow(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
+    public static LinkedHashMap<Integer, ArrayList<TimeWindow>> timeWindowCalculate(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
         PrintStream defaultOut = System.out;// 保存系统默认的打印输出流缓存
         PrintStream ps = null;
         try {

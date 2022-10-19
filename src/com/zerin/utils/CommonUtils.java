@@ -206,7 +206,7 @@ public class CommonUtils {
             }
             cSatInfo.add(cSat);
         }
-        satInfo.clear();//  释放原始卫星数据占用的内存  todo:open satInfo.clear();
+        //satInfo.clear();//  释放原始卫星数据占用的内存  todo:open satInfo.clear();
         return cSatInfo;
     }
 
@@ -230,7 +230,6 @@ public class CommonUtils {
             return true;
         }
     }
-
 
 }
 

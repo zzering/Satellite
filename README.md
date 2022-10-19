@@ -59,7 +59,7 @@ gapTimeWindow方法
 
 #### 6.	计算完整第一题的方法
 
-timeWindow方法
+timeWindowCalculate方法
 
 通过4个for循环，遍历每个点目标和卫星，中间调用前面介绍的方法得到第一题结果
 

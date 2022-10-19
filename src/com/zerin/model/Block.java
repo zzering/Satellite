@@ -5,19 +5,24 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Block {
-    double lng;// 左上角顶点坐标
-    double lat;
+public class Block extends Position{
+    // 继承的坐标为网格左上角顶点坐标
+//    double lng;
+//    double lat;
     double edgelen;// edge length
-    int statue;// inside 3 unsure 2 outside 1 init 0 初始化为0
 
     public Block(){}
 
-    public Block(double x0,double y0,double edge,int statue0){
+    public Block(double x0,double y0,double edge){
         lng =x0;
         lat =y0;
         edgelen=edge;
-        statue=statue0;
+    }
+
+    public Block(Position pos,double edge){
+        lng =pos.lng;
+        lat =pos.lat;
+        edgelen=edge;
     }
 
 }
