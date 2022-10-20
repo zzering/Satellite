@@ -10,12 +10,33 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.Map.Entry;
 
+import static com.zerin.utils.CommonUtils.calculateArea;
 import static com.zerin.utils.CommonUtils.pointInCircle;
 import static com.zerin.utils.Constant.*;
 
 public class CoverageCalculation {
     // 每秒的覆盖率
     static ArrayList<LinkedHashMap<String, ArrayList<Position>>> coverageInfo = new ArrayList<>();
+    /**
+     * to store the unsure blocks
+     */
+    static ArrayList<Block> unsureKey = new ArrayList<>();
+    /**
+     * 用于存储不确定的网格面积之和
+     */
+    private static double curUnsureArea;
+    /**
+     * 网格区域总面积
+     */
+    private static double totalArea;
+
+    // todo:探索合适的划分方法
+
+    public CoverageCalculation() {
+        // 经度区间为75°E-135°E，纬度区间为 0°N-55°N
+        totalArea = calculateArea(new Position(75, 0), new Position(135, 55));
+    }
+
 
     /**
      * 将75°E-135°E  0°N-55°N划分为 12*11边长为5°的网格
@@ -48,7 +69,6 @@ public class CoverageCalculation {
 
         LinkedHashMap<Integer, ArrayList<Block>> allBlocks = new LinkedHashMap<>();
 
-
         double coverageRate = 0.00;
         // 计算每一秒里9个卫星对网格的覆盖情况
         for (int i = 0; i < 86400; i++) {
@@ -56,10 +76,28 @@ public class CoverageCalculation {
             HashMap<Block, Integer> curCoverageInfo = new HashMap<>();
             // 先全初始化为UNSURE
             blockDivision(curCoverageInfo);
+            int satNo = 1;
+            curUnsureArea = 0;// 对于每秒的不确定面积都要归零
+            // 计算这一秒里9个卫星对网格的覆盖情况
             for (Map<Integer, Circle> curSat : circleSatInfo) {
                 // curSat.get(i)用i控制curSat的秒数,得到秒数对应的圆
-                blockInCircle(curCoverageInfo, curSat.get(i));
-
+                // 若网格在某个卫星的圆内 直接break
+                satNo++;
+                // 情况已经确定（覆盖或未覆盖）
+                if (blockInCircle(curCoverageInfo, curSat.get(i)) == 4 || blockInCircle(curCoverageInfo, curSat.get(i)) == 0) {
+                    break;
+                }
+//                else {
+//                    // block与9个卫星判断过后仍情况不确定 （只覆盖了2或3个点）则记录下来，便于以后再次划分
+//                    if (satNo == 9) {
+//                        // 存放不确定的block的左上角坐标
+//                        unsureKey.add(curCoverageInfo.get(i));
+//                    }
+//                }
+            }
+            if (curUnsureArea / totalArea >= 0.001) {
+                // redivide
+                reDivision();
             }
             Coverage coverage = new Coverage(i, coverageRate, curCoverageInfo);
         }
@@ -114,10 +152,10 @@ public class CoverageCalculation {
      * @param curBlock
      * @param cSatEntry
      */
-    public static boolean blockInCircle(HashMap<Block, Integer> curCoverageInfo, Circle cSatEntry) {
-        if(curCoverageInfo.isEmpty()){
+    public static int blockInCircle(HashMap<Block, Integer> curCoverageInfo, Circle cSatEntry) {
+        if (curCoverageInfo.isEmpty()) {
             System.out.println("curCoverageInfo is empty");
-            return false;
+            return -1;
         }
         // 遍历curCoverageInfo,判断其中的网格与圆的关系
         for (Entry<Block, Integer> curBlock : curCoverageInfo.entrySet()) {
@@ -129,27 +167,33 @@ public class CoverageCalculation {
             Position pos3 = new Position(x1, y1 + edge);// 左下
             Position pos4 = new Position(x1 + edge, y1 + edge);// 右下
             int count = 0;
-            count += getCount(curCoverageInfo, cSatEntry, edge, pos1, count);
-            count += getCount(curCoverageInfo, cSatEntry, edge, pos2, count);
-            count += getCount(curCoverageInfo, cSatEntry, edge, pos3, count);
-            count += getCount(curCoverageInfo, cSatEntry, edge, pos4, count);
-            // 四点全在圆内
-            if (count == 4) {
-                return true;
+            count += getCount(curCoverageInfo, cSatEntry, edge, pos1);
+            count += getCount(curCoverageInfo, cSatEntry, edge, pos2);
+            count += getCount(curCoverageInfo, cSatEntry, edge, pos3);
+            count += getCount(curCoverageInfo, cSatEntry, edge, pos4);
+            if (count == 2 || count == 3) {
+                // 存放不确定的block的左上角坐标 这些坐标在后面会进行二次判断
+                unsureKey.add(new Block(pos1, edge));
+                // 计算不确定的block的面积
+                curUnsureArea += calculateArea(pos1, pos4);
             }
-            // 至少有一点不在圆内
-            return false;
+            return count;
         }
+        return -1;
     }
 
-    private static int getCount(HashMap<Block, Integer> curCoverageInfo, Circle cSatEntry, double edge, Position pos, int count) {
+    private static int getCount(HashMap<Block, Integer> curCoverageInfo, Circle cSatEntry, double edge, Position pos) {
         if (pointInCircle(pos, cSatEntry)) {
             curCoverageInfo.put(new Block(pos, edge), INSIDE);
-            count++;
+            return 1;
         } else {
-            curCoverageInfo.put(new Block(pos, edge), OUTSIDE);
+            // 不能直接置为OUTSIDE 因为可能别的卫星能覆盖到
+            // 只有UNSURE才置为OUTSIDE
+            if(curCoverageInfo.get(new Block(pos, edge))==UNSURE){
+                curCoverageInfo.put(new Block(pos, edge), OUTSIDE);
+            }
+            return 0;
         }
-        return count;
     }
 
     /**
@@ -158,21 +202,63 @@ public class CoverageCalculation {
      * @param curBlock
      * @param blocks
      */
-    public static void reDivision(Block curBlock, HashMap<Double, Integer> unsureBlocksLng, ArrayList<Block> blocks) {
-        double x1 = curBlock.getLng();
-        double y1 = curBlock.getLat();
-        double edge = curBlock.getEdgelen() / 2;
-        // hashMap的put方法既是修改也是添加
-        if (unsureBlocksLng.containsKey(x1)) {// 之前划分过 则+1 代表增加了一次划分次数
-            unsureBlocksLng.put(x1, unsureBlocksLng.get(x1) + 1);
-        } else {
-            unsureBlocksLng.put(x1, 1);
+    public static void reDivision(HashMap<Block, Integer> curCoverageInfo) {
+        if (curCoverageInfo.isEmpty()) {
+            System.out.println("curCoverageInfo is empty");
         }
-        curBlock.setEdgelen(edge);
-        blocks.add(new Block(x1 + edge, y1, edge));
-        blocks.add(new Block(x1, y1 + edge, edge));
-        blocks.add(new Block(x1 + edge, y1 + edge, edge));
+        for (Block block : unsureKey) {
+            double edgeLen=block.getEdgelen() / 2;
+            // 向curCoverageInfo中覆盖或添加划分后的信息 左上角的网格是覆盖 其他三个网格是新增
+            // 左上角的网格的value值是已知的,可以不需要重新计算
+            // 4个网格的左上角value不一定是UNSURE(因为有多个卫星)
+            curCoverageInfo.put(new Block(block.getLng(), block.getLat(), edgeLen), INSIDE);
+            curCoverageInfo.put(new Block(block.getLng()+, block.getLat(), edgeLen), curCoverageInfo.getOrDefault(new Block(block.getLng(), block.getLat(), edgeLen*2), UNSURE));
+            curCoverageInfo.put(new Block(block.getLng(), block.getLat(), edgeLen), curCoverageInfo.getOrDefault(new Block(block.getLng(), block.getLat(), edgeLen*2), UNSURE));
+            curCoverageInfo.put(new Block(block.getLng(), block.getLat(), edgeLen), curCoverageInfo.getOrDefault(new Block(block.getLng(), block.getLat(), edgeLen*2), UNSURE));
+
+            curBlock = curCoverageInfo.get(block);
+
+        }
+        // 遍历curCoverageInfo,判断其中的网格与圆的关系
+        for (Entry<Block, Integer> curBlock : curCoverageInfo.entrySet()) {
+            double x1 = curBlock.getKey().getLng();
+            double y1 = curBlock.getKey().getLat();
+            double edge = curBlock.getKey().getEdgelen();
+            Position pos1 = new Position(x1, y1);// 左上
+            Position pos2 = new Position(x1 + edge, y1);// 右上
+            Position pos3 = new Position(x1, y1 + edge);// 左下
+            Position pos4 = new Position(x1 + edge, y1 + edge);// 右下
+            int count = 0;
+            count += getCount(curCoverageInfo, cSatEntry, edge, pos1);
+            count += getCount(curCoverageInfo, cSatEntry, edge, pos2);
+            count += getCount(curCoverageInfo, cSatEntry, edge, pos3);
+            count += getCount(curCoverageInfo, cSatEntry, edge, pos4);
+            if (count == 2 || count == 3) {
+                // 存放不确定的block的左上角坐标 这些坐标在后面会进行二次判断
+                unsureKey.add(new Block(pos1, edge));
+                // 计算不确定的block的面积
+                curUnsureArea += calculateArea(pos1, pos4);
+            }
+            return count;
+        }
+
+
+//        double x1 = curBlock.getLng();
+//        double y1 = curBlock.getLat();
+//        double edge = curBlock.getEdgelen() / 2;
+//        // hashMap的put方法既是修改也是添加
+//        if (unsureBlocksLng.containsKey(x1)) {// 之前划分过 则+1 代表增加了一次划分次数
+//            unsureBlocksLng.put(x1, unsureBlocksLng.get(x1) + 1);
+//        } else {
+//            unsureBlocksLng.put(x1, 1);
+//        }
+//        curBlock.setEdgelen(edge);
+//        blocks.add(new Block(x1 + edge, y1, edge));
+//        blocks.add(new Block(x1, y1 + edge, edge));
+//        blocks.add(new Block(x1 + edge, y1 + edge, edge));
+
+
     }
 }
 
-// todo:建一个哈希表，把所有划分情况在哈希表里面更新！ 可以实现对每一个坐标进行标记，这样UNSURE情况里已经确定的节点就不必重复计算
+// todo:refactor HashMap<Block, Integer> curCoverageInfo->HashMap<Position, <Integer,Integer>> curBlockInfo

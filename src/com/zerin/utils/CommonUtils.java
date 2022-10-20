@@ -7,12 +7,15 @@ import java.io.*;
 import java.util.*;
 
 import static com.zerin.utils.Constant.*;
+import static java.lang.StrictMath.abs;
+import static java.lang.StrictMath.sin;
 
 public class CommonUtils {
 
     /**
      * 读取原始卫星数据
      * 无缓冲的读取 用时110s左右
+     *
      * @param satInfo
      */
     public static void readSatInfo(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
@@ -65,6 +68,7 @@ public class CommonUtils {
     /**
      * 读取原始卫星数据
      * 带缓冲的读取 用时15s左右
+     *
      * @param satInfo
      */
     public static void bufferReadSatInfo(ArrayList<LinkedHashMap<Integer, ArrayList<Position>>> satInfo) {
@@ -84,7 +88,7 @@ public class CommonUtils {
                 for (File iFile : files) {
                     String fileName = iFile.getName();
                     // todo:readfile pause
-                    if(fileName.equals("SatCoverInfo_4.txt")){
+                    if (fileName.equals("SatCoverInfo_4.txt")) {
                         return;
                     }
                     System.out.println("Reading file:" + fileName + "...");
@@ -122,6 +126,7 @@ public class CommonUtils {
 
     /**
      * 秒数转日期
+     *
      * @param time
      * @return
      */
@@ -144,6 +149,7 @@ public class CommonUtils {
 
     /**
      * 从需要判断的点向x轴负方向引一条射线，判断多边形的每一条边与这条射线是否有交点
+     *
      * @param pos
      * @param polyVertices
      * @return
@@ -179,6 +185,7 @@ public class CommonUtils {
 
     /**
      * Convert points to circle
+     *
      * @param satInfo
      * @return
      */
@@ -191,7 +198,7 @@ public class CommonUtils {
         LinkedHashMap<Integer, Circle> cSat = new LinkedHashMap<>();
         // 遍历9卫星
         for (Map<Integer, ArrayList<Position>> curSat : satInfo) {
-            int sNo=0;
+            int sNo = 0;
             // 对于一个具体的卫星(86400)
             for (Map.Entry<Integer, ArrayList<Position>> satEntry : curSat.entrySet()) {
                 ArrayList<Position> polyVertices = new ArrayList<>();
@@ -200,8 +207,8 @@ public class CommonUtils {
                 double y1 = polyVertices.get(0).getLat();
                 double x2 = polyVertices.get(10).getLng();
                 double y2 = polyVertices.get(10).getLat();
-                double radius = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2))/2;
-                cSat.put(sNo,new Circle((x1 + x2) / 2, (y1 + y2) / 2, radius));
+                double radius = Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2)) / 2;
+                cSat.put(sNo, new Circle((x1 + x2) / 2, (y1 + y2) / 2, radius));
                 sNo++;
             }
             cSatInfo.add(cSat);
@@ -212,24 +219,42 @@ public class CommonUtils {
 
     /**
      * 判断点是否在圆内
+     *
      * @param pos
      * @param circle
      * @return
      */
     public static boolean pointInCircle(Position pos, Circle circle) {
-        double x0,y0,x,y,r,distance;
-        x0=pos.getLng();
-        y0=pos.getLat();
-        x=circle.getLng();
-        y=circle.getLat();
-        r=circle.getR();
-        distance=Math.sqrt(Math.pow((x-x0),2)+Math.pow((y-y0),2));
-        if(distance>r){
+        double x0, y0, x, y, r, distance;
+        x0 = pos.getLng();
+        y0 = pos.getLat();
+        x = circle.getLng();
+        y = circle.getLat();
+        r = circle.getR();
+        distance = Math.sqrt(Math.pow((x - x0), 2) + Math.pow((y - y0), 2));
+        if (distance > r) {
             return false;
         } else {
             return true;
         }
     }
+
+    /**
+     * 计算球面网格面积
+     * @param pos1
+     * @param pos2
+     * @return
+     */
+    public static double calculateArea(Position pos1, Position pos2){
+        double lng1, lat1, lng2, lat2;
+        // 角度制转弧度制
+        lng1=Math.toRadians(pos1.getLng());
+        lng2=Math.toRadians(pos2.getLng());
+        lat1=Math.toRadians(pos1.getLat());
+        lat2=Math.toRadians(pos2.getLat());
+        return abs(Math.pow(RADIUS,2)*(lng2-lng1)*(sin(lat2)-sin(lat1)));
+    }
+
 
 }
 

@@ -21,6 +21,10 @@ public interface Constant {
     int UNSURE =1;
     /** 点（网格）在圆外*/
     int OUTSIDE=0;
+    // todo r^2=40589641
+    /** 地球半径*/
+    int RADIUS=6371;
+
 
 
 

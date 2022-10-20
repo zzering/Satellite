@@ -106,7 +106,18 @@ reDivision方法
 
 ![image-20220811164130165](img/image-20220811164130165.png)
 
-#### 4.
+#### 4.对球面面积的计算
+
+R地球半径
+
+Longitude经度
+
+Latitude纬度
+$$
+S=R^2(lat_2-lat_1)*(\sin lat_2-\sin lat_1)
+$$
+
+
 
 
 
@@ -121,4 +132,6 @@ readme+=12题的主要函数的 for循环逻辑
 
 ## 参考
 
-https:// www.cnblogs.com/luxiaoxun/p/3722358.html
+https://www.cnblogs.com/luxiaoxun/p/3722358.html
+
+https://wenku.baidu.com/view/a9def74633687e21af45a997.html
