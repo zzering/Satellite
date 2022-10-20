@@ -112,14 +112,13 @@ R地球半径
 
 Longitude经度
 
-Latitude纬度
+Latitude纬度  
 $$
 S=R^2(lat_2-lat_1)*(\sin lat_2-\sin lat_1)
 $$
 
 $$S=R^2(lat_2-lat_1)*(\sin lat_2-\sin lat_1)$$
 
-![](http://latex.codecogs.com/gif.latex?{S=R^2(lat_2-lat_1)*(\sin lat_2-\sin lat_1)})
 
 
 
