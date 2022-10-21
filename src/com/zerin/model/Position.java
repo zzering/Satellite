@@ -15,4 +15,27 @@ public class Position {
         lng=x;
         lat=y;
     }
+
+    public Position(Position position){
+        lng=position.lng;
+        lat=position.lat;
+    }
+
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this==obj){
+            return true;
+        }
+        if(obj==null||getClass()!=obj.getClass()){
+            return false;
+        }
+        Position pos=(Position) obj;
+        if()
+    }
 }
