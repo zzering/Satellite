@@ -13,16 +13,11 @@ public interface Constant {
     String RESULT2_DATA_PATH = "Result/coverage.txt";
     /** 点（网格）在圆内*/
     int INSIDE=2;
-//    /** 网格与圆的关系不确定，但有3个点在圆内*/
-//    int UNSURE3=3;
-//    /** */
-//    int UNSURE2=2;
     /** 点（网格）与圆的关系尚未确定*/
     int UNSURE =1;
     /** 点（网格）在圆外*/
     int OUTSIDE=0;
-    // todo r^2=40589641
-    /** 地球半径*/
+    /** 地球半径(公里)*/
     int RADIUS=6371;
 
 

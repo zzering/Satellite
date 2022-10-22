@@ -112,11 +112,10 @@ R地球半径
 
 Longitude经度
 
-Latitude纬度  
+Latitude纬度
 $$
 S=R^2(lat_2-lat_1)*(\sin lat_2-\sin lat_1)
 $$
-
 $$S=R^2(lat_2-lat_1)*(\sin lat_2-\sin lat_1)$$
 
 
@@ -132,7 +131,12 @@ readme+=12题的主要函数的 for循环逻辑
 
 
 ## 参考
+[判断点是否在多边形内部](https://www.cnblogs.com/luxiaoxun/p/3722358.html)
 
-https://www.cnblogs.com/luxiaoxun/p/3722358.html
+[球面面积的计算公式](https://wenku.baidu.com/view/a9def74633687e21af45a997.html)
 
-https://wenku.baidu.com/view/a9def74633687e21af45a997.html
+[怎么get到自定义类型key的hashmap中的value](https://blog.csdn.net/sun_wangdong/article/details/51315106)
+
+[编写equals和hashCode](https://www.liaoxuefeng.com/wiki/1252599548343744/1265117217944672)
+
+[hashCode 为什么乘以 31？深入理解 hashCode 和 hash 算法](https://www.cnblogs.com/taotaobaibai/articles/13726618.html)

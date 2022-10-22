@@ -51,8 +51,9 @@ public class statelliteService {
             System.out.println("2.计算区域目标的覆盖率");
             System.out.println("3.计算");
             System.out.println("4.重新读取原始卫星数据");
-            ch = scanner.nextInt();
-            switch (ch) {
+            // todo:open scanner
+            //ch = scanner.nextInt();
+            switch (2) {
                 case 1: {
                     if (satInfo.isEmpty()) {
                         System.out.println("请先读取原始卫星数据");

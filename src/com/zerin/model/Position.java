@@ -9,33 +9,33 @@ public class Position {
     double lng;// longitude
     double lat;// latitude
 
-    public Position(){}
-
-    public Position(double x,double y){
-        lng=x;
-        lat=y;
-    }
-
-    public Position(Position position){
-        lng=position.lng;
-        lat=position.lat;
-    }
-
-
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int h = 0;
+        h = (int) (31 * h + lng);
+        h = (int) (31 * h + lat);
+        return h;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(this==obj){
-            return true;
-        }
-        if(obj==null||getClass()!=obj.getClass()){
-            return false;
-        }
-        Position pos=(Position) obj;
-        if()
+        return obj instanceof Position &&
+                this.lng == ((Position) obj).lng &&
+                this.lat == ((Position) obj).lat;
     }
+
+    public Position() {
+    }
+
+    public Position(double x, double y) {
+        lng = x;
+        lat = y;
+    }
+
+    public Position(Position position) {
+        lng = position.lng;
+        lat = position.lat;
+    }
+
+
 }

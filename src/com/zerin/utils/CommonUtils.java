@@ -88,7 +88,7 @@ public class CommonUtils {
                 for (File iFile : files) {
                     String fileName = iFile.getName();
                     // todo:readfile pause
-                    if (fileName.equals("SatCoverInfo_4.txt")) {
+                    if (fileName.equals("SatCoverInfo_3.txt")) {
                         return;
                     }
                     System.out.println("Reading file:" + fileName + "...");

@@ -7,11 +7,11 @@ import lombok.Setter;
 @Getter
 public class BlockStatus {
     double edgeLen;
-    double coverStatus;
+    int coverStatus;
 
     public BlockStatus(){}
 
-    public BlockStatus(double edgeLen, double coverStatus) {
+    public BlockStatus(double edgeLen, int coverStatus) {
         this.edgeLen = edgeLen;
         this.coverStatus = coverStatus;
     }

@@ -1,12 +1,13 @@
 package com.zerin.test;
 
-import com.zerin.model.Block;
+import com.zerin.model.BlockStatus;
 import com.zerin.model.Position;
 import org.junit.Test;
 
 import java.util.*;
 
 import static com.zerin.service.CoverageCalculation.blockDivision;
+import static com.zerin.utils.CommonUtils.calculateArea;
 
 /**
  * 用于测试，可删
@@ -37,16 +38,27 @@ public class Ztest {
 
     @Test
     public void tr() {
-        Map<Position, String> map1 = new HashMap<Position, String>();
-        Position a= new Position(1, 1);
 
-        map1.put(a, "1");
-        map1.put(new Position(2, 2), "2");
-        map1.put(new Position(3, 3), "3");
-        map1.put(new Position(4, 2), "4");
-        String s = map1.get(a);
-        System.out.println(s);
-    }
+        double totalArea = calculateArea(new Position(75, 0), new Position(135, 55));
+        System.out.println(totalArea);
+
+        // 记录当前秒的覆盖情况
+        HashMap<Position, BlockStatus> curCoverageInfo = new HashMap<>();
+        // 先全初始化为UNSURE
+        blockDivision(curCoverageInfo);
+        double area=0;
+        for (Map.Entry<Position, BlockStatus> curBlock : curCoverageInfo.entrySet()) {
+            double x1 = curBlock.getKey().getLng();
+            double y1 = curBlock.getKey().getLat();
+            double edge = curBlock.getValue().getEdgeLen();
+            Position pos1 = new Position(x1, y1);// 左上
+            Position pos4 = new Position(x1 + edge, y1 + edge);// 右下
+            area+=calculateArea(pos1,pos4);
+        }
+        System.out.println(totalArea);
+        System.out.println(area);
+
+        }
 }
 
 
